@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>GRIMM [grmm] — SERVER 2109</title>
+  <meta name="description" content="GRIMM [grmm] — Server 2109. Forged in Ice. Bound by Family.">
+  <meta name="theme-color" content="#080b0f">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+      --ice: #dcecff;
+      --ice-dim: #8ea9c2;
+      --steel: #607487;
+      --dark: #070a0e;
+      --dark-2: #0c1117;
+      --dark-3: #111922;
+      --stone: #1a222b;
+      --fire: #d18a45;
+      --fire-light: #f0bd75;
+      --white: #f4f7fa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* =========================================
+       ATMOSPHERE
+    ========================================= */
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
+      opacity: .15;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,.025) 0px,
+          rgba(255,255,255,.025) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+    }
+
+    .snow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 15;
+      overflow: hidden;
+    }
+
+    .snow span {
+      position: absolute;
+      top: -20px;
+      width: 3px;
+      height: 3px;
+      background: rgba(230,242,255,.75);
+      border-radius: 50%;
+      filter: blur(.4px);
+      animation: snowfall linear infinite;
+    }
+
+    .snow span:nth-child(1)  { left: 4%;  animation-duration: 12s; animation-delay: -2s; }
+    .snow span:nth-child(2)  { left: 11%; animation-duration: 17s; animation-delay: -8s; width:2px;height:2px; }
+    .snow span:nth-child(3)  { left: 18%; animation-duration: 14s; animation-delay: -5s; }
+    .snow span:nth-child(4)  { left: 27%; animation-duration: 20s; animation-delay: -13s; width:2px;height:2px; }
+    .snow span:nth-child(5)  { left: 35%; animation-duration: 15s; animation-delay: -7s; }
+    .snow span:nth-child(6)  { left: 43%; animation-duration: 19s; animation-delay: -3s; }
+    .snow span:nth-child(7)  { left: 51%; animation-duration: 13s; animation-delay: -9s; width:2px;height:2px; }
+    .snow span:nth-child(8)  { left: 59%; animation-duration: 18s; animation-delay: -12s; }
+    .snow span:nth-child(9)  { left: 67%; animation-duration: 16s; animation-delay: -4s; width:2px;height:2px; }
+    .snow span:nth-child(10) { left: 75%; animation-duration: 21s; animation-delay: -15s; }
+    .snow span:nth-child(11) { left: 83%; animation-duration: 14s; animation-delay: -6s; }
+    .snow span:nth-child(12) { left: 91%; animation-duration: 19s; animation-delay: -10s; width:2px;height:2px; }
+
+    @keyframes snowfall {
+      0% {
+        transform: translate3d(0,-20px,0);
+      }
+      50% {
+        transform: translate3d(50px,50vh,0);
+      }
+      100% {
+        transform: translate3d(-30px,110vh,0);
+      }
+    }
+
+    /* =========================================
+       NAVIGATION
+    ========================================= */
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      z-index: 30;
+      background: linear-gradient(
+        to bottom,
+        rgba(4,7,10,.9),
+        rgba(4,7,10,0)
+      );
+    }
+
+    .nav-brand {
+      font-family: "Cinzel", serif;
+      font-weight: 700;
+      letter-spacing: 5px;
+      font-size: 18px;
+      color: var(--ice);
+    }
+
+    .nav-brand small {
+      display: block;
+      font-family: "Inter", sans-serif;
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: var(--ice-dim);
+      margin-top: 2px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 34px;
+    }
+
+    nav a {
+      color: #aebdca;
+      text-decoration: none;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 3px;
+      transition: color .3s;
+    }
+
+    nav a:hover {
+      color: white;
+    }
+
+    /* =========================================
+       HERO — THE FROZEN REALM
+    ========================================= */
+
+    .hero {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          ellipse at 50% 55%,
+          rgba(61,103,136,.25),
+          transparent 42%
+        ),
+        radial-gradient(
+          ellipse at 70% 30%,
+          rgba(76,126,150,.12),
+          transparent 35%
+        ),
+        linear-gradient(
+          180deg,
+          #05080c 0%,
+          #0b141d 45%,
+          #101b23 100%
+        );
+    }
+
+    /* northern lights */
+
+    .aurora {
+      position: absolute;
+      width: 100%;
+      height: 45%;
+      top: 4%;
+      left: 0;
+      opacity: .28;
+      filter: blur(35px);
+      background:
+        radial-gradient(
+          ellipse at 25% 50%,
+          rgba(80,150,160,.25),
+          transparent 40%
+        ),
+        radial-gradient(
+          ellipse at 55% 35%,
+          rgba(90,120,180,.18),
+          transparent 45%
+        ),
+        radial-gradient(
+          ellipse at 78% 55%,
+          rgba(70,145,155,.2),
+          transparent 40%
+        );
+      animation: aurora 9s ease-in-out infinite alternate;
+    }
+
+    @keyframes aurora {
+      from {
+        transform: translateX(-2%) scale(1);
+      }
+      to {
+        transform: translateX(3%) scale(1.08);
+      }
+    }
+
+    /* mountains */
+
+    .mountains {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 48%;
+      background:
+        linear-gradient(135deg, transparent 38%, #111a21 38.2%, #111a21 48%, transparent 48.2%),
+        linear-gradient(225deg, transparent 38%, #0d151c 38.2%, #0d151c 49%, transparent 49%);
+      clip-path: polygon(
+        0 70%,
+        10% 46%,
+        17% 62%,
+        27% 27%,
+        34% 53%,
+        45% 20%,
+        52% 48%,
+        64% 26%,
+        72% 55%,
+        84% 31%,
+        91% 53%,
+        100% 39%,
+        100% 100%,
+        0 100%
+      );
+      opacity: .95;
+    }
+
+    .mountains::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        #070a0e 0%,
+        transparent 55%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 5;
+      padding: 100px 20px 60px;
+    }
+
+    .rune-line {
+      color: var(--steel);
+      font-size: 13px;
+      letter-spacing: 13px;
+      margin-bottom: 24px;
+      opacity: .8;
+    }
+
+    .hero h1 {
+      font-family: "Cinzel", serif;
+      font-size: clamp(70px, 15vw, 180px);
+      line-height: .82;
+      letter-spacing: 14px;
+      font-weight: 700;
+      color: #eaf4fc;
+      text-shadow:
+        0 0 35px rgba(180,220,245,.15),
+        0 10px 40px rgba(0,0,0,.8);
+    }
+
+    .phonetic {
+      font-size: 11px;
+      letter-spacing: 7px;
+      color: var(--ice-dim);
+      margin-top: 20px;
+      text-transform: uppercase;
+    }
+
+    .server {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 35px;
+      padding: 10px 22px;
+      border: 1px solid rgba(160,190,210,.25);
+      background: rgba(8,14,20,.45);
+      backdrop-filter: blur(8px);
+      font-family: "Cinzel", serif;
+      letter-spacing: 5px;
+      font-size: 13px;
+      color: #cbdbe7;
+    }
+
+    .server::before,
+    .server::after {
+      content: "ᚷ";
+      color: #627c90;
+      font-size: 12px;
+    }
+
+    .tagline {
+      margin-top: 25px;
+      font-family: "Cinzel", serif;
+      font-size: 16px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #d6e0e7;
+    }
+
+    .scroll {
+      margin-top: 65px;
+      color: #667986;
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .scroll::after {
+      content: "↓";
+      display: block;
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    @keyframes pulse {
+      50% { opacity: .35; }
+    }
+
+    /* =========================================
+       GENERAL SECTIONS
+    ========================================= */
+
+    section {
+      position: relative;
+      padding: 120px 7%;
+    }
+
+    .section-label {
+      font-size: 9px;
+      letter-spacing: 5px;
+      color: var(--ice-dim);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-family: "Cinzel", serif;
+      font-size: clamp(35px, 5vw, 62px);
+      letter-spacing: 3px;
+      line-height: 1.05;
+      color: #e5edf3;
+    }
+
+    .section-title span {
+      color: #7d97aa;
+    }
+
+    .section-intro {
+      max-width: 650px;
+      color: #8899a7;
+      line-height: 1.9;
+      margin-top: 25px;
+      font-size: 14px;
+    }
+
+    /* =========================================
+       OATH
+    ========================================= */
+
+    .oath {
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(66,105,130,.15),
+          transparent 45%
+        ),
+        #080c11;
+      text-align: center;
+    }
+
+    .oath-content {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .oath-mark {
+      font-family: "Cinzel", serif;
+      font-size: 46px;
+      color: #71899a;
+      margin-bottom: 25px;
+    }
+
+    .oath h2 {
+      font-family: "Cinzel", serif;
+      font-size: clamp(30px, 5vw, 54px);
+      letter-spacing: 4px;
+    }
+
+    .oath p {
+      color: #93a2ad;
+      line-height: 2;
+      max-width: 650px;
+      margin: 25px auto 0;
+      font-size: 15px;
+    }
+
+    /* =========================================
+       GRIMM HALL
+    ========================================= */
+
+    .hall {
+      overflow: hidden;
+      background:
+        radial-gradient(
+          ellipse at 50% 100%,
+          rgba(174,95,38,.18),
+          transparent 45%
+        ),
+        linear-gradient(
+          180deg,
+          #090d12,
+          #100f0d
+        );
+    }
+
+    .hall::before {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 300px;
+      left: 50%;
+      bottom: -150px;
+      transform: translateX(-50%);
+      background: radial-gradient(
+        ellipse,
+        rgba(210,120,45,.23),
+        transparent 65%
+      );
+      filter: blur(30px);
+      pointer-events: none;
+    }
+
+    .hall-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      max-width: 1150px;
+      margin: auto;
+    }
+
+    .hall-art {
+      min-height: 420px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .fire {
+      position: absolute;
+      bottom: 40px;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(235,155,72,.5),
+        rgba(190,90,30,.15) 45%,
+        transparent 70%
+      );
+      filter: blur(10px);
+      animation: fireglow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes fireglow {
+      from { transform: scale(.95); opacity: .65; }
+      to { transform: scale(1.08); opacity: 1; }
+    }
+
+    .hall-symbol {
+      position: relative;
+      z-index: 2;
+      width: 230px;
+      height: 290px;
+      border: 2px solid rgba(180,140,95,.3);
+      clip-path: polygon(
+        50% 0,
+        94% 22%,
+        86% 83%,
+        50% 100%,
+        14% 83%,
+        6% 22%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(22,18,14,.55);
+      box-shadow:
+        0 0 70px rgba(205,111,38,.12),
+        inset 0 0 50px rgba(205,111,38,.08);
+    }
+
+    .hall-symbol span {
+      font-family: "Cinzel", serif;
+      font-size: 80px;
+      color: rgba(211,166,111,.7);
+    }
+
+    .hall-copy .section-label {
+      color: #b6804c;
+    }
+
+    .hall-copy .section-title {
+      color: #eee6dd;
+    }
+
+    .hall-copy .section-title span {
+      color: #b68150;
+    }
+
+    .hall-copy p {
+      color: #9c9289;
+      line-height: 1.9;
+      margin-top: 25px;
+      font-size: 14px;
+    }
+
+    .values {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 35px;
+    }
+
+    .value {
+      padding: 22px 18px;
+      border: 1px solid rgba(190,150,105,.15);
+      background: rgba(255,255,255,.025);
+    }
+
+    .value strong {
+      display: block;
+      font-family: "Cinzel", serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #d1b08b;
+      margin-bottom: 7px;
+    }
+
+    .value small {
+      color: #80776f;
+      font-size: 10px;
+    }
+
+    /* =========================================
+       CLAN
+    ========================================= */
+
+    .clan {
+      background: #090d12;
+    }
+
+    .clan-inner {
+      max-width: 1150px;
+      margin: auto;
+    }
+
+    .clan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 40px;
+      margin-bottom: 55px;
+    }
+
+    .shield-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .shield {
+      min-height: 250px;
+      padding: 35px 25px;
+      border: 1px solid rgba(150,180,200,.12);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.035),
+          rgba(255,255,255,.008)
+        );
+      text-align: center;
+      transition: transform .4s, border-color .4s, background .4s;
+    }
+
+    .shield:hover {
+      transform: translateY(-7px);
+      border-color: rgba(160,190,210,.35);
+      background: rgba(255,255,255,.045);
+    }
+
+    .shield-icon {
+      font-size: 54px;
+      color: #8198a9;
+      margin-bottom: 25px;
+    }
+
+    .shield h3 {
+      font-family: "Cinzel", serif;
+      font-size: 19px;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .shield p {
+      color: #71808d;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    /* =========================================
+       SONG / ATMOSPHERE
+    ========================================= */
+
+    .blood-oath {
+      min-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background:
+        radial-gradient(
+          ellipse at center,
+          rgba(82,35,30,.17),
+          transparent 55%
+        ),
+        #06090d;
+    }
+
+    .blood-oath-content {
+      max-width: 800px;
+    }
+
+    .blood-oath .section-label {
+      color: #9d6259;
+    }
+
+    .blood-oath h2 {
+      font-family: "Cinzel", serif;
+      font-size: clamp(38px, 6vw, 75px);
+      letter-spacing: 5px;
+    }
+
+    .blood-oath p {
+      color: #7d858d;
+      max-width: 570px;
+      margin: 25px auto;
+      line-height: 1.9;
+      font-size: 14px;
+    }
+
+    .oath-line {
+      width: 100px;
+      height: 1px;
+      margin: 35px auto;
+      background: #53616c;
+    }
+
+    /* =========================================
+       FOOTER
+    ========================================= */
+
+    footer {
+      padding: 70px 7% 45px;
+      background: #05070a;
+      border-top: 1px solid rgba(180,200,220,.08);
+      text-align: center;
+    }
+
+    .footer-brand {
+      font-family: "Cinzel", serif;
+      font-size: 28px;
+      letter-spacing: 7px;
+      color: #d8e4ec;
+    }
+
+    .footer-server {
+      margin-top: 10px;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #687b89;
+    }
+
+    .footer-motto {
+      margin-top: 30px;
+      font-family: "Cinzel", serif;
+      color: #8295a3;
+      font-size: 11px;
+      letter-spacing: 3px;
+    }
+
+    .copyright {
+      margin-top: 45px;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #3e4b54;
+    }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+
+    @media (max-width: 800px) {
+
+      nav {
+        padding: 0 5%;
+      }
+
+      nav ul {
+        display: none;
+      }
+
+      .hero h1 {
+        letter-spacing: 7px;
+      }
+
+      .tagline {
+        font-size: 12px;
+        letter-spacing: 3px;
+      }
+
+      section {
+        padding: 90px 6%;
+      }
+
+      .hall-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .hall-art {
+        min-height: 300px;
+        order: 2;
+      }
+
+      .hall-copy {
+        order: 1;
+      }
+
+      .shield-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .clan-header {
+        display: block;
+      }
+
+      .values {
+        grid-template-columns: 1fr;
+      }
+
+      .rune-line {
+        letter-spacing: 7px;
+      }
+    }
+
+    @media (max-width: 500px) {
+
+      .hero h1 {
+        font-size: 68px;
+        letter-spacing: 5px;
+      }
+
+      .server {
+        font-size: 11px;
+        letter-spacing: 3px;
+      }
+
+      .phonetic {
+        letter-spacing: 4px;
+      }
+
+      .hall-symbol {
+        width: 190px;
+        height: 240px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SNOW -->
+  <div class="snow" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <a href="#home" class="nav-brand">
+      GRIMM
+      <small>[ grmm ]</small>
+    </a>
+
+    <ul>
+      <li><a href="#oath">Oath</a></li>
+      <li><a href="#hall">Hall</a></li>
+      <li><a href="#clan">Clan</a></li>
+      <li><a href="#song">The Oath</a></li>
+    </ul>
+  </nav>
+
+
+  <!-- ======================================
+       THE FROZEN REALM
+  ======================================= -->
+
+  <main>
+
+    <section class="hero" id="home">
+
+      <div class="aurora"></div>
+      <div class="mountains"></div>
+
+      <div class="hero-content">
+
+        <div class="rune-line">
+          ᚷ &nbsp; ᚱ &nbsp; ᛟ &nbsp; ᛗ &nbsp; ᛗ &nbsp; ᚷ
+        </div>
+
+        <h1>GRIMM</h1>
+
+        <div class="phonetic">
+          [ grmm ]
+        </div>
+
+        <div class="server">
+          SERVER 2109
+        </div>
+
+        <div class="tagline">
+          Forged in Ice. Bound by Family.
+        </div>
+
+        <div class="scroll">
+          Enter the Realm
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ======================================
+         THE OATH
+    ======================================= -->
+
+    <section class="oath" id="oath">
+
+      <div class="oath-content">
+
+        <div class="oath-mark">ᛉ</div>
+
+        <div class="section-label">
+          The First Law
+        </div>
+
+        <h2>We Stand Together.</h2>
+
+        <p>
+          Beyond the frozen mountains lies a clan forged not by blood alone,
+          but by loyalty, trust, and the oath we share.
+          GRIMM is more than a banner.
+          It is the family that stands beneath it.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ======================================
+         GRIMM HALL
+    ======================================= -->
+
+    <section class="hall" id="hall">
+
+      <div class="hall-grid">
+
+        <div class="hall-art">
+
+          <div class="fire"></div>
+
+          <div class="hall-symbol">
+            <span>ᛉ</span>
+          </div>
+
+        </div>
+
+        <div class="hall-copy">
+
+          <div class="section-label">
+            Within the Walls
+          </div>
+
+          <h2 class="section-title">
+            The <span>GRIMM</span> Hall
+          </h2>
+
+          <p>
+            Outside, the realm is cold.
+            The mountains are unforgiving and the winter knows no mercy.
+            But beyond the ancient doors burns the fire of the clan.
+          </p>
+
+          <p>
+            Here we gather.
+            Here we plan.
+            Here victories are remembered and fallen banners are honored.
+          </p>
+
+          <div class="values">
+
+            <div class="value">
+              <strong>LOYALTY</strong>
+              <small>The clan comes first.</small>
+            </div>
+
+            <div class="value">
+              <strong>HONOR</strong>
+              <small>Our word is our bond.</small>
+            </div>
+
+            <div class="value">
+              <strong>FAMILY</strong>
+              <small>No one stands alone.</small>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ======================================
+         CLAN
+    ======================================= -->
+
+    <section class="clan" id="clan">
+
+      <div class="clan-inner">
+
+        <div class="clan-header">
+
+          <div>
+            <div class="section-label">
+              The Clan
+            </div>
+
+            <h2 class="section-title">
+              Three Pillars.<br>
+              <span>One Banner.</span>
+            </h2>
+          </div>
+
+          <p class="section-intro">
+            Every member carries the same mark.
+            Every victory belongs to the clan.
+            Every challenge is faced together.
+          </p>
+
+        </div>
+
+
+        <div class="shield-grid">
+
+          <article class="shield">
+            <div class="shield-icon">🛡</div>
+
+            <h3>THE SHIELD</h3>
+
+            <p>
+              Protection of the clan.
+              Strength when one member cannot stand alone.
+            </p>
+          </article>
+
+
+          <article class="shield">
+            <div class="shield-icon">ᛉ</div>
+
+            <h3>THE OATH</h3>
+
+            <p>
+              A promise carried beyond victory,
+              defeat, and the changing seasons.
+            </p>
+          </article>
+
+
+          <article class="shield">
+            <div class="shield-icon">ᚱ</div>
+
+            <h3>THE PATH</h3>
+
+            <p>
+              Forward through the storm.
+              The clan never stops moving.
+            </p>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ======================================
+         GRIM BLOOD OATH
+    ======================================= -->
+
+    <section class="blood-oath" id="song">
+
+      <div class="blood-oath-content">
+
+        <div class="section-label">
+          The Song of the Clan
+        </div>
+
+        <h2>GRIM BLOOD OATH</h2>
+
+        <div class="oath-line"></div>
+
+        <p>
+          A darker song for darker nights.
+          The sound of steel, snow, ancient stone,
+          and an oath that refuses to break.
+        </p>
+
+        <div class="rune-line">
+          ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ======================================
+       FOOTER
+  ======================================= -->
+
+  <footer>
+
+    <div class="footer-brand">
+      GRIMM
+    </div>
+
+    <div class="footer-server">
+      [ GRMM ] &nbsp; • &nbsp; SERVER 2109
+    </div>
+
+    <div class="footer-motto">
+      Forged in Ice. Bound by Family.
+    </div>
+
+    <div class="copyright">
+      © 2109 GRIMM CLAN
+    </div>
+
+  </footer>
+
+
+  <script>
+    // Subtle parallax movement for the mountain layer
+    const mountains = document.querySelector(".mountains");
+
+    window.addEventListener("scroll", () => {
+      const scroll = window.scrollY;
+
+      if (mountains) {
+        mountains.style.transform =
+          `translateY(${scroll * 0.08}px)`;
+      }
+    });
+  </script>
+
+</body>
+</html>
