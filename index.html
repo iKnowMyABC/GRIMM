@@ -1379,5 +1379,22 @@
     });
   </script>
 
+<audio id="bg-music" loop>
+  <source src="audio/grimm%20blood%20oath.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const audio = document.getElementById("bg-music");
+
+  // Play audio on the user's first click anywhere on the page
+  window.addEventListener("click", () => {
+    if (audio.paused) {
+      audio.play().catch((err) => {
+        console.error("Audio playback error:", err);
+      });
+    }
+  }, { once: true });
+</script>
+  
 </body>
 </html>
