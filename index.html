@@ -588,69 +588,209 @@
     }
 
     /* =========================================
-       ALLIANCE
+       ALLIANCE ROSTER
     ========================================= */
 
-    .alliance {
-      background: #090d12;
-    }
-
-    .alliance-inner {
-      max-width: 1150px;
-      margin: auto;
-    }
-
-    .alliance-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 40px;
-      margin-bottom: 55px;
-    }
-
-    .shield-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .shield {
-      min-height: 250px;
-      padding: 35px 25px;
-      border: 1px solid rgba(150,180,200,.12);
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255,255,255,.035),
-          rgba(255,255,255,.008)
-        );
+    .rank-label {
       text-align: center;
-      transition: transform .4s, border-color .4s, background .4s;
-    }
-
-    .shield:hover {
-      transform: translateY(-7px);
-      border-color: rgba(160,190,210,.35);
-      background: rgba(255,255,255,.045);
-    }
-
-    .shield-icon {
-      font-size: 54px;
-      color: #8198a9;
-      margin-bottom: 25px;
-    }
-
-    .shield h3 {
+      margin: 65px 0 25px;
       font-family: "Cinzel", serif;
-      font-size: 19px;
-      letter-spacing: 2px;
-      margin-bottom: 12px;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #829aaa;
     }
 
-    .shield p {
-      color: #71808d;
-      font-size: 12px;
-      line-height: 1.7;
+    .rank-label span {
+      margin: 0 14px;
+      color: #536b7b;
+    }
+
+    .r5-card {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 38px 30px;
+      text-align: center;
+      position: relative;
+
+      background:
+        radial-gradient(
+          circle at center,
+          rgba(100,135,155,.13),
+          transparent 65%
+        ),
+        rgba(255,255,255,.025);
+
+      border: 1px solid rgba(170,200,220,.3);
+
+      box-shadow:
+        0 0 70px rgba(100,140,165,.08),
+        inset 0 0 35px rgba(130,160,180,.035);
+
+      clip-path: polygon(
+        5% 0,
+        95% 0,
+        100% 10%,
+        100% 90%,
+        95% 100%,
+        5% 100%,
+        0 90%,
+        0 10%
+      );
+    }
+
+    .r5-rune {
+      font-size: 42px;
+      color: #9ab4c5;
+      margin-bottom: 15px;
+    }
+
+    .r5-name {
+      font-family: "Cinzel", serif;
+      font-size: 30px;
+      letter-spacing: 4px;
+      color: #edf5fa;
+    }
+
+    .r5-title {
+      margin-top: 10px;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #8da7b8;
+    }
+
+    .r5-line {
+      width: 70px;
+      height: 1px;
+      background: #647d8e;
+      margin: 22px auto;
+    }
+
+    .r5-server {
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: #566b78;
+    }
+
+    .r4-label {
+      margin-top: 75px;
+    }
+
+    .r4-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    .r4-card {
+      min-height: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+
+      padding: 15px 8px;
+
+      border: 1px solid rgba(150,180,200,.16);
+      background: rgba(255,255,255,.025);
+
+      font-family: "Cinzel", serif;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #b8c8d2;
+
+      transition:
+        transform .3s,
+        border-color .3s,
+        background .3s;
+    }
+
+    .r4-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(170,200,220,.4);
+      background: rgba(255,255,255,.05);
+    }
+
+    .members-label {
+      margin-top: 80px;
+    }
+
+    .members-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+
+      display: grid;
+      grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+      border-top: 1px solid rgba(150,180,200,.1);
+      border-left: 1px solid rgba(150,180,200,.1);
+    }
+
+    .members-grid div {
+      min-height: 48px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 8px 6px;
+
+      text-align: center;
+
+      border-right: 1px solid rgba(150,180,200,.1);
+      border-bottom: 1px solid rgba(150,180,200,.1);
+
+      color: #7e909e;
+      font-size: 10px;
+      letter-spacing: .5px;
+
+      transition:
+        color .25s,
+        background .25s;
+    }
+
+    .members-grid div:hover {
+      color: #d9e6ee;
+      background: rgba(255,255,255,.035);
+    }
+
+
+    /* =========================================
+       ALLIANCE MOBILE
+    ========================================= */
+
+    @media (max-width: 800px) {
+
+      .r4-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .members-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .r5-card {
+        max-width: 320px;
+      }
+
+    }
+
+    @media (max-width: 450px) {
+
+      .r4-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .members-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .members-grid div {
+        font-size: 9px;
+      }
+
     }
 
     /* =========================================
@@ -987,72 +1127,184 @@
 
     <section class="alliance" id="alliance">
 
-      <div class="alliance-inner">
+  <div class="alliance-inner">
 
-        <div class="alliance-header">
+    <!-- ALLIANCE HEADER -->
 
-          <div>
-            <div class="section-label">
-              The Alliance
-            </div>
+    <div class="alliance-header">
 
-            <h2 class="section-title">
-              Three Pillars.<br>
-              <span>One Banner.</span>
-            </h2>
-          </div>
-
-          <p class="section-intro">
-            Every member carries the same mark.
-            Every victory belongs to the alliance.
-            Every challenge is faced together.
-          </p>
-
+      <div>
+        <div class="section-label">
+          SERVER 2109
         </div>
 
-
-        <div class="shield-grid">
-
-          <article class="shield">
-            <div class="shield-icon">🛡</div>
-
-            <h3>THE SHIELD</h3>
-
-            <p>
-              Protection of the alliance.
-              Strength when one member cannot stand alone.
-            </p>
-          </article>
-
-
-          <article class="shield">
-            <div class="shield-icon">ᛉ</div>
-
-            <h3>THE OATH</h3>
-
-            <p>
-              A promise carried beyond victory,
-              defeat, and the changing seasons.
-            </p>
-          </article>
-
-
-          <article class="shield">
-            <div class="shield-icon">ᚱ</div>
-
-            <h3>THE PATH</h3>
-
-            <p>
-              Forward through the storm.
-              The alliance never stops moving.
-            </p>
-          </article>
-
-        </div>
-
+        <h2 class="section-title">
+          The <span>Alliance</span>
+        </h2>
       </div>
 
-    </section>
+      <p class="section-intro">
+        One banner. Many names. One family standing together beneath the
+        GRIMM oath.
+      </p>
+
+    </div>
+
+
+    <!-- R5 -->
+
+    <div class="rank-label">
+      <span>ᛉ</span>
+      R5 — ALLIANCE LEADER
+      <span>ᛉ</span>
+    </div>
+
+    <div class="r5-card">
+
+      <div class="r5-rune">ᛉ</div>
+
+      <div class="r5-name">
+        Mouse
+      </div>
+
+      <div class="r5-title">
+        ALLIANCE LEADER
+      </div>
+
+      <div class="r5-line"></div>
+
+      <div class="r5-server">
+        GRIMM • SERVER 2109
+      </div>
+
+    </div>
+
+
+    <!-- R4 -->
+
+    <div class="rank-label r4-label">
+      <span>ᚱ</span>
+      R4 — LEADERSHIP
+      <span>ᚱ</span>
+    </div>
+
+    <div class="r4-grid">
+
+      <div class="r4-card">BROTHERGRIMM</div>
+      <div class="r4-card">Johnno</div>
+      <div class="r4-card">Ovsi05</div>
+      <div class="r4-card">Kristy</div>
+      <div class="r4-card">JP</div>
+      <div class="r4-card">NurmiTj</div>
+      <div class="r4-card">Steeljedi</div>
+      <div class="r4-card">iKnowMyABC</div>
+      <div class="r4-card">Smiiiley</div>
+      <div class="r4-card">Yuki</div>
+
+    </div>
+
+
+    <!-- MEMBERS -->
+
+    <div class="rank-label members-label">
+      <span>ᚷ</span>
+      ALLIANCE MEMBERS
+      <span>ᚷ</span>
+    </div>
+
+    <div class="members-grid">
+
+      <div>Brie</div>
+      <div>Toffl</div>
+      <div>4D1111</div>
+      <div>SangreDeFuego</div>
+      <div>NiNa</div>
+      <div>Döniz the king</div>
+      <div>Metanoff</div>
+      <div>Sir Gold</div>
+      <div>Yorknorth</div>
+      <div>Airborneuk</div>
+      <div>CoriMari</div>
+      <div>Matt</div>
+      <div>Dodopulos</div>
+      <div>Sentry</div>
+      <div>Fear and loathing</div>
+      <div>Tutat</div>
+      <div>Fishface1</div>
+      <div>Ellamm</div>
+      <div>Kuczkó</div>
+      <div>Xu Har Tou</div>
+      <div>Brand</div>
+      <div>LIV54</div>
+      <div>Caumont de la force</div>
+      <div>Panzer</div>
+      <div>MAESTRO998</div>
+      <div>Proper</div>
+      <div>beani man</div>
+      <div>Luni2705</div>
+      <div>Nouly9</div>
+      <div>Blitzkreiggg</div>
+      <div>Myth</div>
+      <div>Lafi dk</div>
+      <div>PhoCow</div>
+      <div>Sjonny Bakker</div>
+      <div>Nitro Fighter</div>
+      <div>MadeofMegabytes</div>
+      <div>hans2000</div>
+      <div>Bluemorphooo</div>
+      <div>KrisVogn</div>
+      <div>Ms B</div>
+      <div>keysha aqila zhafira</div>
+      <div>Merkkar</div>
+      <div>PSG64</div>
+      <div>Ruma</div>
+      <div>TOT3</div>
+      <div>BAKARIIL</div>
+      <div>Benontheweb</div>
+      <div>dayak banjar</div>
+      <div>DJ</div>
+      <div>WackyW</div>
+      <div>LeaveTomAlone</div>
+      <div>Manana</div>
+      <div>An Daghdha</div>
+      <div>Godfried2109</div>
+      <div>Dzidson</div>
+      <div>Crtmaster34</div>
+      <div>Sam33442</div>
+      <div>RIP76</div>
+      <div>Paladin822</div>
+      <div>Sergei7878</div>
+      <div>LσɳҽWσʅϝ</div>
+      <div>Kelvinos</div>
+      <div>Delyan55</div>
+      <div>Jase</div>
+      <div>GeorgePrime</div>
+      <div>SWITCHEROO</div>
+      <div>Velvet</div>
+      <div>BurreX</div>
+      <div>Spartan</div>
+      <div>Gav0182</div>
+      <div>CheeseChef</div>
+      <div>Northern Redneck</div>
+      <div>mustaro</div>
+      <div>mayadaezz</div>
+      <div>pej17ota</div>
+      <div>Larni Lou</div>
+      <div>leo omon omon</div>
+      <div>Laksaur70</div>
+      <div>Ahmed EX</div>
+      <div>mette41</div>
+      <div>ramon1993</div>
+      <div>QueenOfScots</div>
+      <div>AntsGoMarchin</div>
+      <div>51Biggi51</div>
+      <div>Jessie1818</div>
+
+    </div>
+
+  </div>
+
+</section>
 
 
     <!-- ======================================
