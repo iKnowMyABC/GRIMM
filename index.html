@@ -1386,6 +1386,9 @@
 <script>
   const audio = document.getElementById("bg-music");
 
+  // Set background volume (0.2 = 20% volume)
+  audio.volume = 0.2;
+
   // Play audio on the user's first click anywhere on the page
   window.addEventListener("click", () => {
     if (audio.paused) {
