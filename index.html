@@ -1147,7 +1147,11 @@
         One banner. Many names. One family standing together beneath the
         GRIMM oath.
       </p>
-
+      
+      <div class="server" style="margin-top: 20px; display: inline-flex;">
+          MEMBERS:&nbsp;<span id="member-count" style="color: var(--ice);">...</span>&nbsp;/ 100
+        </div>
+      
     </div>
 
 
@@ -1340,7 +1344,7 @@
   </main>
 
 
-  <!-- ======================================
+ <!-- ======================================
        FOOTER
   ======================================= -->
 
@@ -1365,6 +1369,43 @@
   </footer>
 
 
+  <!-- ======================================
+       AUDIO CONTROLS
+  ======================================= -->
+
+  <button id="audio-toggle" style="
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 50;
+    background: rgba(12, 17, 23, 0.85);
+    border: 1px solid rgba(160, 190, 210, 0.3);
+    color: var(--ice);
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  ">
+    <span id="audio-icon">♪</span>
+    <span id="audio-status">SOUND: ON</span>
+  </button>
+
+  <audio id="bg-music" loop>
+    <source src="audio/grimm%20blood%20oath.mp3" type="audio/mpeg">
+  </audio>
+
+
+  <!-- ======================================
+       SCRIPTS
+  ======================================= -->
+
   <script>
     // Subtle parallax movement for the mountain layer
     const mountains = document.querySelector(".mountains");
@@ -1377,27 +1418,52 @@
           `translateY(${scroll * 0.08}px)`;
       }
     });
+
+    // Background Audio Handling
+    const audio = document.getElementById("bg-music");
+    const toggleBtn = document.getElementById("audio-toggle");
+    const audioStatus = document.getElementById("audio-status");
+    const audioIcon = document.getElementById("audio-icon");
+
+    // Set background volume (0.05 = 5% volume)
+    audio.volume = 0.05;
+
+    // Play audio on the user's first click anywhere on the page
+    window.addEventListener("click", (e) => {
+      if (e.target.closest("#audio-toggle")) return;
+      if (audio.paused) {
+        audio.play().catch((err) => {
+          console.error("Audio playback error:", err);
+        });
+        audioStatus.innerText = "SOUND: ON";
+        audioIcon.innerText = "♪";
+      }
+    }, { once: true });
+
+    // Floating toggle button click behavior
+    toggleBtn.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play();
+        audioStatus.innerText = "SOUND: ON";
+        audioIcon.innerText = "♪";
+      } else {
+        audio.pause();
+        audioStatus.innerText = "SOUND: OFF";
+        audioIcon.innerText = "✕";
+      }
+    });
+
+    // Automatically count roster members (R5 + 10 R4s + listed members)
+    const membersGridCount = document.querySelectorAll(".members-grid div").length;
+    const r4Count = document.querySelectorAll(".r4-grid .r4-card").length;
+    const r5Count = document.querySelectorAll(".r5-card").length;
+    
+    const totalCount = membersGridCount + r4Count + r5Count;
+    const countElement = document.getElementById("member-count");
+    if (countElement) {
+      countElement.innerText = totalCount;
+    }
   </script>
 
-<audio id="bg-music" loop>
-  <source src="audio/grimm%20blood%20oath.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-  const audio = document.getElementById("bg-music");
-
-  // Set background volume (0.05 = 5% volume)
-  audio.volume = 0.05;
-
-  // Play audio on the user's first click anywhere on the page
-  window.addEventListener("click", () => {
-    if (audio.paused) {
-      audio.play().catch((err) => {
-        console.error("Audio playback error:", err);
-      });
-    }
-  }, { once: true });
-</script>
-  
 </body>
 </html>
