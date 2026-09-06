@@ -805,6 +805,68 @@
     }
 
     /* =========================================
+       LIVE RESET & VS BANNER
+    ========================================= */
+
+.vs-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background: rgba(12, 17, 23, 0.7);
+  border: 1px solid rgba(160, 190, 210, 0.25);
+  border-radius: 6px;
+  padding: 16px 28px;
+  max-width: 680px;
+  margin: 0 auto 36px;
+  backdrop-filter: blur(8px);
+}
+
+.vs-banner-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.vs-tag {
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--ice-dim);
+  font-family: "Cinzel", serif;
+}
+
+.vs-value {
+  font-family: "Cinzel", serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+}
+
+.vs-hint {
+  font-size: 0.78rem;
+  color: #7d97aa;
+}
+
+.vs-divider {
+  width: 1px;
+  height: 42px;
+  background: rgba(160, 190, 210, 0.2);
+}
+
+@media (max-width: 600px) {
+  .vs-banner {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .vs-divider {
+    width: 60px;
+    height: 1px;
+  }
+}
+    
+    /* =========================================
        WAR TIMETABLE
     ========================================= */
 
@@ -1495,6 +1557,21 @@
   <h2 class="section-title"><span>ALLIANCE</span> EVENT SCHEDULE</h2>
   <p class="schedule-sub">Live countdowns synced to server time.</p>
 
+<!-- LIVE RESET & VS DAY STATUS BANNER -->
+<div class="vs-banner">
+  <div class="vs-banner-item">
+    <span class="vs-tag">DAILY RESET</span>
+    <div id="reset-timer" class="vs-value">--h --m --s</div>
+    <span class="vs-hint">00:00 Server Time</span>
+  </div>
+  <div class="vs-divider"></div>
+  <div class="vs-banner-item">
+    <span class="vs-tag">VS DUEL</span>
+    <div id="vs-day-name" class="vs-value">Loading...</div>
+    <span id="vs-day-desc" class="vs-hint">Evaluating server day...</span>
+  </div>
+</div>
+  
   <div class="schedule-grid">
 
     <!-- 1. Zombie Siege -->
@@ -1746,6 +1823,57 @@
   // Server runs 2 hours behind standard UTC (-2)
   const SERVER_OFFSET_HOURS = -2;
 
+  // --- VS DUEL SCHEDULE DEFINITION ---
+  const VS_SCHEDULE = [
+    { name: "Day 7 • Rest & Prep", desc: "Settlement day. Collect crates." },      // 0 = Sun
+    { name: "Day 1 • Radar Training", desc: "Save radar stamina & cans." },        // 1 = Mon
+    { name: "Day 2 • Base Expansion", desc: "Building speedups & construction." }, // 2 = Tue
+    { name: "Day 3 • Science Tech", desc: "Tech speedups & valor badges." },       // 3 = Wed
+    { name: "Day 4 • Train Heroes", desc: "Hero tickets & EXP shards." },          // 4 = Thu
+    { name: "Day 5 • Total Mobilization", desc: "Train troops & all speedups." },  // 5 = Fri
+    { name: "Day 6 • Enemy Buster", desc: "Cross-server invasion. Keep shields up!" } // 6 = Sat
+  ];
+
+  function updateLiveServerReset() {
+    const now = new Date();
+    
+    // Shift device time to server time
+    const serverMs = now.getTime() + (SERVER_OFFSET_HOURS * 3600 * 1000);
+    const serverNow = new Date(serverMs);
+    
+    // Target next midnight reset (00:00:00) in server time
+    const nextReset = new Date(Date.UTC(
+      serverNow.getUTCFullYear(),
+      serverNow.getUTCMonth(),
+      serverNow.getUTCDate() + 1,
+      0, 0, 0
+    ));
+    
+    const diffSec = Math.max(0, Math.floor((nextReset.getTime() - serverNow.getTime()) / 1000));
+    const hrs = Math.floor(diffSec / 3600);
+    const mins = Math.floor((diffSec % 3600) / 60);
+    const secs = diffSec % 60;
+    
+    const pad = (n) => String(n).padStart(2, '0');
+    
+    const timerEl = document.getElementById('reset-timer');
+    if (timerEl) {
+      timerEl.textContent = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
+    }
+
+    // Determine current VS Day by day-of-week
+    const currentServerDay = serverNow.getUTCDay();
+    const vsInfo = VS_SCHEDULE[currentServerDay];
+    
+    const nameEl = document.getElementById('vs-day-name');
+    const descEl = document.getElementById('vs-day-desc');
+    
+    if (nameEl && descEl && vsInfo) {
+      nameEl.textContent = vsInfo.name;
+      descEl.textContent = vsInfo.desc;
+    }
+  }
+
   function updateTimetableCountdowns() {
     const now = new Date();
 
@@ -1761,8 +1889,8 @@
       let nextDate = null;
 
       if (type === 'alternating') {
-        // --- 48-Hour Cycle (Marshall Guard) ---
-        const anchorStr = timeEl.dataset.anchor || '2026-09-05';
+        // 48-Hour Cycle (Marshall Guard)
+        const anchorStr = timeEl.dataset.anchor || '2026-09-06';
         const [year, month, day] = anchorStr.split('-').map(Number);
         let stepDate = new Date(Date.UTC(year, month - 1, day, utcTargetHour, targetMin, 0));
 
@@ -1772,7 +1900,7 @@
         nextDate = stepDate;
 
       } else {
-        // --- Weekly Day Cycle (Zombie Siege, Desert Storm) ---
+        // Weekly Day Cycle (Zombie Siege, Desert Storm, Enemy Buster)
         const rawDays = timeEl.dataset.serverDays || timeEl.dataset.serverDay || "0";
         const targetDays = rawDays.split(',').map(d => parseInt(d.trim(), 10));
         let minDiff = Infinity;
@@ -1819,9 +1947,15 @@
     });
   }
 
+  // --- RUN ONCE AT LOAD, THEN TICK EVERY SECOND ---
   document.addEventListener('DOMContentLoaded', () => {
     updateTimetableCountdowns();
-    setInterval(updateTimetableCountdowns, 1000);
+    updateLiveServerReset();
+
+    setInterval(() => {
+      updateTimetableCountdowns();
+      updateLiveServerReset();
+    }, 1000);
   });
 </script>
   
