@@ -717,6 +717,25 @@
         background .3s;
     }
 
+    /* Titled cards get an icy-silver/gold border presence */
+    .r4-card[data-role] {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(212, 175, 55, 0.03);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.1);
+    }
+
+    /* The role label created automatically under the name */
+    .r4-card[data-role]::after {
+      content: attr(data-role);
+      display: block;
+      font-family: "Cinzel", serif;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: #e5edf3;
+      text-shadow: 0 0 8px rgba(220, 236, 255, 0.5);
+      opacity: 0.8;
+    }
+
     .r4-card:hover {
       transform: translateY(-4px);
       border-color: rgba(170,200,220,.4);
@@ -1434,16 +1453,17 @@
 
     <div class="r4-grid">
 
+      <div class="r4-card" data-role="WARLORD">Johnno</div>
+      <div class="r4-card" data-role="RECRUITER">Kristy</div>
+      <div class="r4-card" data-role="MUSE">NurmiTj</div>
+      <div class="r4-card" data-role="BUTLER">JP</div>
+      
       <div class="r4-card">BROTHERGRIMM</div>
-      <div class="r4-card">Johnno</div>
-      <div class="r4-card">Ovsi05</div>
-      <div class="r4-card">Kristy</div>
-      <div class="r4-card">JP</div>
-      <div class="r4-card">NurmiTj</div>
-      <div class="r4-card">Steeljedi</div>
       <div class="r4-card">iKnowMyABC</div>
-      <div class="r4-card">Yorknorth</div>
       <div class="r4-card">Yuki</div>
+      <div class="r4-card">Ovsi05</div>
+      <div class="r4-card">Steeljedi</div>
+      <div class="r4-card">Yorknorth</div>
 
     </div>
 
