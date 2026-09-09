@@ -835,126 +835,6 @@
       background: rgba(255,255,255,.035);
     }
 
-    /* Cards that contain bio data get an interactive glow & rune */
-    .r4-card[data-bio],
-    .members-grid div[data-bio] {
-      cursor: pointer;
-      position: relative;
-    }
-
-    .r4-card[data-bio]:hover,
-    .members-grid div[data-bio]:hover {
-      border-color: rgba(212, 175, 55, 0.6);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(212, 175, 55, 0.2);
-    }
-
-    /* Tiny corner rune indicator showing a bio is available */
-    .r4-card[data-bio]::before,
-    .members-grid div[data-bio]::before {
-      content: "ᛟ";
-      position: absolute;
-      top: 4px;
-      right: 6px;
-      font-size: 8px;
-      color: rgba(212, 175, 55, 0.5);
-      transition: color 0.3s;
-    }
-
-    .r4-card[data-bio]:hover::before,
-    .members-grid div[data-bio]:hover::before {
-      color: #ffd4a8;
-    }
-
-    /* Modal Backdrop */
-    .bio-modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(5, 8, 12, 0.85);
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      padding: 20px;
-    }
-
-    .bio-modal-backdrop.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* Modal Stone Card */
-    .bio-modal {
-      background: #0d1218;
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.15);
-      border-radius: 4px;
-      max-width: 440px;
-      width: 100%;
-      padding: 26px 22px 20px 22px;
-      position: relative;
-      text-align: center;
-      transform: scale(0.94);
-      transition: transform 0.25s ease;
-    }
-
-    .bio-modal-backdrop.active .bio-modal {
-  transform: scale(1);
-    }
-
-    .bio-modal-close {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      background: none;
-      border: none;
-      color: #7a8c99;
-      font-size: 20px;
-      cursor: pointer;
-      line-height: 1;
-      transition: color 0.2s;
-    }
-
-    .bio-modal-close:hover {
-      color: #fff;
-    }
-
-    .bio-modal-role {
-      font-family: "Cinzel", serif;
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--gold, #d4af37);
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .bio-modal-name {
-      font-family: "Cinzel", serif;
-      font-size: 22px;
-      color: #e5edf3;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px rgba(220, 236, 255, 0.3);
-      margin-bottom: 14px;
-    }
-
-    .bio-modal-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
-      margin-bottom: 16px;
-    }
-
-    .bio-modal-text {
-      font-size: 13px;
-      line-height: 1.6;
-      color: #b8c8d2;
-      text-align: left;
-      white-space: pre-line;
-    }
-
 
     /* =========================================
        ALLIANCE MOBILE
@@ -1622,12 +1502,12 @@
 
     <div class="r4-grid">
 
-      <div class="r4-card" data-role="WARLORD" data-bio="Alreet!… (said in a full Geordie accent) First name is Jonathan UK/Newcastle Age 37 Civil Servant - part qual. Accountant/ Contract Management 1x Wife & 1x Pet sperm… sorry, I meant son (currently teething 🙃) - promise I love him!! I clicked and downloaded LastWar instead of another game 😅 (happy mistake), been playing now for around 4 weeks or so and probs spent too much adult money on it already!">Johnno</div>
+      <div class="r4-card" data-role="WARLORD">Johnno</div>
       <div class="r4-card" data-role="RECRUITER">Kristy</div>
       <div class="r4-card" data-role="MUSE">NurmiTj</div>
       <div class="r4-card" data-role="BUTLER">JP</div>
       
-      <div class="r4-card" data-bio="I'm Tony  better known as Bernard step  dad of one grandad of 3 i live in small town called retford North of Nottingham uk me and the wife have lazer cutting engraving business. Don't really interact online but you guys are awsome">BROTHERGRIMM</div>
+      <div class="r4-card">BROTHERGRIMM</div>
       <div class="r4-card">ABC</div>
       <div class="r4-card">Yuki</div>
       <div class="r4-card">Ovsi</div>
@@ -1667,7 +1547,7 @@
       <div>Kuczkó</div>
       <div>Xu Har Tou</div>
       <div>Brand</div>
-      <div data-bio="Hey 👋🏻 Im Líviusz/51yo, - the bald one on the right side of my profile pic 😉 - married, daughter 16, son 14, from Budapest, Hungary - I work in the security sector. I mainly play Pure Sniper, so my nickname is different than in Last War, you can find me there as LIV54 🤝🏻🫡🥃">LIV54</div>
+      <div>LIV54</div>
       <div>Caumont de la force</div>
       <div>Panzer</div>
       <div>MAESTRO998</div>
@@ -2099,19 +1979,7 @@
     <source src="audio/grimm%20blood%20oath.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- ======================================
-       BIO MODAL (Placed BEFORE scripts)
-  ======================================= -->
-  <div class="bio-modal-backdrop" id="bioModalBackdrop">
-    <div class="bio-modal">
-      <button class="bio-modal-close" id="bioModalClose">&times;</button>
-      <div class="bio-modal-role" id="bioModalRole"></div>
-      <div class="bio-modal-name" id="bioModalName"></div>
-      <div class="bio-modal-divider"></div>
-      <div class="bio-modal-text" id="bioModalText"></div>
-    </div>
-  </div>
-  
+
   <!-- ======================================
        SCRIPTS
   ======================================= -->
@@ -2175,185 +2043,145 @@
     }
   </script>
 
-  <!-- ======================================
-       SERVER LOGIC & BIO SCRIPTS
-  ======================================= -->
-  <script>
-    // Server runs 2 hours behind standard UTC (-2)
-    const SERVER_OFFSET_HOURS = -2;
+<script>
+  // Server runs 2 hours behind standard UTC (-2)
+  const SERVER_OFFSET_HOURS = -2;
 
-    // --- VS DUEL SCHEDULE DEFINITION ---
-    const VS_SCHEDULE = [
-      { name: "Day 7 • Rest & Prep", desc: "Have the day off. Collect your Rewards." },
-      { name: "Day 1 • Radar Training", desc: "Radar, Gathering, Stamina, Hero EXP & Drone Data/Chips/Parts" },
-      { name: "Day 2 • Base Expansion", desc: "Building Power, Survivors & UR Tasks/Trucks" },
-      { name: "Day 3 • Age of Science", desc: "Radar, Tech (Valor) Research & Drone Components" },
-      { name: "Day 4 • Train Heroes", desc: "Hero Recruiting, Leveling, Promoting, Skill Upgrades & EW Shards" },
-      { name: "Day 5 • Total Mobilization", desc: "Radar, Train Troops, Building/Tech Power & Speedups." },
-      { name: "Day 6 • Enemy Buster", desc: "Troop Kills, Speedups & UR Tasks/Trucks" }
-    ];
+  // --- VS DUEL SCHEDULE DEFINITION ---
+  const VS_SCHEDULE = [
+    { name: "Day 7 • Rest & Prep", desc: "Have the day off. Collect your Rewards." },      // 0 = Sun
+    { name: "Day 1 • Radar Training", desc: "Radar, Gathering, Stamina, Hero EXP & Drone Data/Chips/Parts" },        // 1 = Mon
+    { name: "Day 2 • Base Expansion", desc: "Building Power, Survivors & UR Tasks/Trucks" }, // 2 = Tue
+    { name: "Day 3 • Age of Science", desc: "Radar, Tech (Valor) Research & Drone Components" },       // 3 = Wed
+    { name: "Day 4 • Train Heroes", desc: "Hero Recruiting, Leveling, Promoting, Skill Upgrades & EW Shards" },          // 4 = Thu
+    { name: "Day 5 • Total Mobilization", desc: "Radar, Overlord, Train Troops, Building/Tech Power & Speedups." },  // 5 = Fri
+    { name: "Day 6 • Enemy Buster", desc: "Troop Kills, Speedups & UR Tasks/Trucks" } // 6 = Sat
+  ];
 
-    function updateLiveServerReset() {
-      const now = new Date();
-      const serverMs = now.getTime() + (SERVER_OFFSET_HOURS * 3600 * 1000);
-      const serverNow = new Date(serverMs);
-      
-      const nextReset = new Date(Date.UTC(
-        serverNow.getUTCFullYear(),
-        serverNow.getUTCMonth(),
-        serverNow.getUTCDate() + 1,
-        0, 0, 0
-      ));
-      
-      const diffSec = Math.max(0, Math.floor((nextReset.getTime() - serverNow.getTime()) / 1000));
-      const hrs = Math.floor(diffSec / 3600);
-      const mins = Math.floor((diffSec % 3600) / 60);
-      const secs = diffSec % 60;
-      
-      const pad = (n) => String(n).padStart(2, '0');
-      
-      const timerEl = document.getElementById('reset-timer');
-      if (timerEl) {
-        timerEl.textContent = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
-      }
-
-      const currentServerDay = serverNow.getUTCDay();
-      const vsInfo = VS_SCHEDULE[currentServerDay];
-      
-      const nameEl = document.getElementById('vs-day-name');
-      const descEl = document.getElementById('vs-day-desc');
-      
-      if (nameEl && descEl && vsInfo) {
-        nameEl.textContent = vsInfo.name;
-        descEl.textContent = vsInfo.desc;
-      }
+  function updateLiveServerReset() {
+    const now = new Date();
+    
+    // Shift device time to server time
+    const serverMs = now.getTime() + (SERVER_OFFSET_HOURS * 3600 * 1000);
+    const serverNow = new Date(serverMs);
+    
+    // Target next midnight reset (00:00:00) in server time
+    const nextReset = new Date(Date.UTC(
+      serverNow.getUTCFullYear(),
+      serverNow.getUTCMonth(),
+      serverNow.getUTCDate() + 1,
+      0, 0, 0
+    ));
+    
+    const diffSec = Math.max(0, Math.floor((nextReset.getTime() - serverNow.getTime()) / 1000));
+    const hrs = Math.floor(diffSec / 3600);
+    const mins = Math.floor((diffSec % 3600) / 60);
+    const secs = diffSec % 60;
+    
+    const pad = (n) => String(n).padStart(2, '0');
+    
+    const timerEl = document.getElementById('reset-timer');
+    if (timerEl) {
+      timerEl.textContent = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
     }
 
-    function updateTimetableCountdowns() {
-      const now = new Date();
+    // Determine current VS Day by day-of-week
+    const currentServerDay = serverNow.getUTCDay();
+    const vsInfo = VS_SCHEDULE[currentServerDay];
+    
+    const nameEl = document.getElementById('vs-day-name');
+    const descEl = document.getElementById('vs-day-desc');
+    
+    if (nameEl && descEl && vsInfo) {
+      nameEl.textContent = vsInfo.name;
+      descEl.textContent = vsInfo.desc;
+    }
+  }
 
-      document.querySelectorAll('.event-card').forEach(card => {
-        const timeEl = card.querySelector('.event-time');
-        if (!timeEl) return;
+  function updateTimetableCountdowns() {
+    const now = new Date();
 
-        const type = timeEl.dataset.eventType || 'weekly';
-        const targetHour = parseInt(timeEl.dataset.serverHour, 10);
-        const targetMin = parseInt(timeEl.dataset.serverMin, 10);
-        const utcTargetHour = (targetHour - SERVER_OFFSET_HOURS + 24) % 24;
+    document.querySelectorAll('.event-card').forEach(card => {
+      const timeEl = card.querySelector('.event-time');
+      if (!timeEl) return;
 
-        let nextDate = null;
+      const type = timeEl.dataset.eventType || 'weekly';
+      const targetHour = parseInt(timeEl.dataset.serverHour, 10);
+      const targetMin = parseInt(timeEl.dataset.serverMin, 10);
+      const utcTargetHour = (targetHour - SERVER_OFFSET_HOURS + 24) % 24;
 
-        if (type === 'alternating') {
-          const anchorStr = timeEl.dataset.anchor || '2026-09-06';
-          const [year, month, day] = anchorStr.split('-').map(Number);
-          let stepDate = new Date(Date.UTC(year, month - 1, day, utcTargetHour, targetMin, 0));
+      let nextDate = null;
 
-          while (stepDate.getTime() <= now.getTime()) {
-            stepDate.setUTCDate(stepDate.getUTCDate() + 2);
+      if (type === 'alternating') {
+        // 48-Hour Cycle (Marshall Guard)
+        const anchorStr = timeEl.dataset.anchor || '2026-09-06';
+        const [year, month, day] = anchorStr.split('-').map(Number);
+        let stepDate = new Date(Date.UTC(year, month - 1, day, utcTargetHour, targetMin, 0));
+
+        while (stepDate.getTime() <= now.getTime()) {
+          stepDate.setUTCDate(stepDate.getUTCDate() + 2);
+        }
+        nextDate = stepDate;
+
+      } else {
+        // Weekly Day Cycle (Zombie Siege, Desert Storm, Enemy Buster)
+        const rawDays = timeEl.dataset.serverDays || timeEl.dataset.serverDay || "0";
+        const targetDays = rawDays.split(',').map(d => parseInt(d.trim(), 10));
+        let minDiff = Infinity;
+
+        targetDays.forEach(d => {
+          let dayOffset = (d - now.getUTCDay() + 7) % 7;
+          let candidate = new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate() + dayOffset,
+            utcTargetHour,
+            targetMin,
+            0
+          ));
+
+          if (candidate.getTime() <= now.getTime()) {
+            candidate.setUTCDate(candidate.getUTCDate() + 7);
           }
-          nextDate = stepDate;
 
-        } else {
-          const rawDays = timeEl.dataset.serverDays || timeEl.dataset.serverDay || "0";
-          const targetDays = rawDays.split(',').map(d => parseInt(d.trim(), 10));
-          let minDiff = Infinity;
+          let diff = candidate.getTime() - now.getTime();
+          if (diff < minDiff) {
+            minDiff = diff;
+            nextDate = candidate;
+          }
+        });
+      }
 
-          targetDays.forEach(d => {
-            let dayOffset = (d - now.getUTCDay() + 7) % 7;
-            let candidate = new Date(Date.UTC(
-              now.getUTCFullYear(),
-              now.getUTCMonth(),
-              now.getUTCDate() + dayOffset,
-              utcTargetHour,
-              targetMin,
-              0
-            ));
+      const diffMs = nextDate.getTime() - now.getTime();
+      const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
 
-            if (candidate.getTime() <= now.getTime()) {
-              candidate.setUTCDate(candidate.getUTCDate() + 7);
-            }
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
 
-            let diff = candidate.getTime() - now.getTime();
-            if (diff < minDiff) {
-              minDiff = diff;
-              nextDate = candidate;
-            }
-          });
-        }
+      const pad = (n) => String(n).padStart(2, '0');
 
-        const diffMs = nextDate.getTime() - now.getTime();
-        const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+      let timerText = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+      if (days > 0) {
+        timerText = `${days}d ` + timerText;
+      }
 
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
+      timeEl.textContent = timerText;
+    });
+  }
 
-        const pad = (n) => String(n).padStart(2, '0');
+  // --- RUN ONCE AT LOAD, THEN TICK EVERY SECOND ---
+  document.addEventListener('DOMContentLoaded', () => {
+    updateTimetableCountdowns();
+    updateLiveServerReset();
 
-        let timerText = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-        if (days > 0) {
-          timerText = `${days}d ` + timerText;
-        }
-
-        timeEl.textContent = timerText;
-      });
-    }
-
-    // --- INITIALIZE EVERYTHING ONCE DOM IS READY ---
-    document.addEventListener('DOMContentLoaded', () => {
+    setInterval(() => {
       updateTimetableCountdowns();
       updateLiveServerReset();
-
-      setInterval(() => {
-        updateTimetableCountdowns();
-        updateLiveServerReset();
-      }, 1000);
-
-      // Bio Modal Logic
-      const bioModalBackdrop = document.getElementById('bioModalBackdrop');
-      const bioModalClose = document.getElementById('bioModalClose');
-      const bioModalName = document.getElementById('bioModalName');
-      const bioModalRole = document.getElementById('bioModalRole');
-      const bioModalText = document.getElementById('bioModalText');
-
-      if (!bioModalBackdrop) return;
-
-      document.addEventListener('click', (e) => {
-        const target = e.target.closest('[data-bio]');
-        if (target) {
-          // Finds the player name text safely
-          let name = '';
-          for (let node of target.childNodes) {
-            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-              name = node.textContent.trim();
-              break;
-            }
-          }
-          if (!name) name = target.innerText.split('\n')[0].trim();
-
-          const role = target.getAttribute('data-role') || 'WARRIOR OF GRIMM';
-          const bio = target.getAttribute('data-bio');
-
-          bioModalName.textContent = name;
-          bioModalRole.textContent = role;
-          bioModalText.textContent = bio;
-
-          bioModalBackdrop.classList.add('active');
-        }
-      });
-
-      const closeBioModal = () => bioModalBackdrop.classList.remove('active');
-
-      if (bioModalClose) bioModalClose.addEventListener('click', closeBioModal);
-      bioModalBackdrop.addEventListener('click', (e) => {
-        if (e.target === bioModalBackdrop) closeBioModal();
-      });
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeBioModal();
-      });
-    });
-  </script>
-
+    }, 1000);
+  });
+</script>
+  
 </body>
 </html>
