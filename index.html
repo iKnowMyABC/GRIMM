@@ -1667,7 +1667,7 @@
       <div>Kuczkó</div>
       <div>Xu Har Tou</div>
       <div>Brand</div>
-      <div data-bio="Hey 👋🏻 Im Líviusz/51yo, - the bald one on the right side of my profile pic 😉 - married, daughter 16, son 14, from Budapest, Hungary - I work in the security sector. I mainly play Pure Sniper, so my nickname is different than in Last War, you can find me there as LIV54 🤝🏻🫡🥃"></div>
+      <div data-bio="Hey 👋🏻 Im Líviusz/51yo, - the bald one on the right side of my profile pic 😉 - married, daughter 16, son 14, from Budapest, Hungary - I work in the security sector. I mainly play Pure Sniper, so my nickname is different than in Last War, you can find me there as LIV54 🤝🏻🫡🥃">LIV54</div>
       <div>Caumont de la force</div>
       <div>Panzer</div>
       <div>MAESTRO998</div>
@@ -2099,7 +2099,19 @@
     <source src="audio/grimm%20blood%20oath.mp3" type="audio/mpeg">
   </audio>
 
-
+  <!-- ======================================
+       BIO MODAL (Placed BEFORE scripts)
+  ======================================= -->
+  <div class="bio-modal-backdrop" id="bioModalBackdrop">
+    <div class="bio-modal">
+      <button class="bio-modal-close" id="bioModalClose">&times;</button>
+      <div class="bio-modal-role" id="bioModalRole"></div>
+      <div class="bio-modal-name" id="bioModalName"></div>
+      <div class="bio-modal-divider"></div>
+      <div class="bio-modal-text" id="bioModalText"></div>
+    </div>
+  </div>
+  
   <!-- ======================================
        SCRIPTS
   ======================================= -->
@@ -2163,189 +2175,185 @@
     }
   </script>
 
-<script>
-  // Server runs 2 hours behind standard UTC (-2)
-  const SERVER_OFFSET_HOURS = -2;
+  <!-- ======================================
+       SERVER LOGIC & BIO SCRIPTS
+  ======================================= -->
+  <script>
+    // Server runs 2 hours behind standard UTC (-2)
+    const SERVER_OFFSET_HOURS = -2;
 
-  // --- VS DUEL SCHEDULE DEFINITION ---
-  const VS_SCHEDULE = [
-    { name: "Day 7 • Rest & Prep", desc: "Have the day off. Collect your Rewards." },      // 0 = Sun
-    { name: "Day 1 • Radar Training", desc: "Radar, Gathering, Stamina, Hero EXP & Drone Data/Chips/Parts" },        // 1 = Mon
-    { name: "Day 2 • Base Expansion", desc: "Building Power, Survivors & UR Tasks/Trucks" }, // 2 = Tue
-    { name: "Day 3 • Age of Science", desc: "Radar, Tech (Valor) Research & Drone Components" },       // 3 = Wed
-    { name: "Day 4 • Train Heroes", desc: "Hero Recruiting, Leveling, Promoting, Skill Upgrades & EW Shards" },          // 4 = Thu
-    { name: "Day 5 • Total Mobilization", desc: "Radar, Train Troops, Building/Tech Power & Speedups." },  // 5 = Fri
-    { name: "Day 6 • Enemy Buster", desc: "Troop Kills, Speedups & UR Tasks/Trucks" } // 6 = Sat
-  ];
+    // --- VS DUEL SCHEDULE DEFINITION ---
+    const VS_SCHEDULE = [
+      { name: "Day 7 • Rest & Prep", desc: "Have the day off. Collect your Rewards." },
+      { name: "Day 1 • Radar Training", desc: "Radar, Gathering, Stamina, Hero EXP & Drone Data/Chips/Parts" },
+      { name: "Day 2 • Base Expansion", desc: "Building Power, Survivors & UR Tasks/Trucks" },
+      { name: "Day 3 • Age of Science", desc: "Radar, Tech (Valor) Research & Drone Components" },
+      { name: "Day 4 • Train Heroes", desc: "Hero Recruiting, Leveling, Promoting, Skill Upgrades & EW Shards" },
+      { name: "Day 5 • Total Mobilization", desc: "Radar, Train Troops, Building/Tech Power & Speedups." },
+      { name: "Day 6 • Enemy Buster", desc: "Troop Kills, Speedups & UR Tasks/Trucks" }
+    ];
 
-  function updateLiveServerReset() {
-    const now = new Date();
-    
-    // Shift device time to server time
-    const serverMs = now.getTime() + (SERVER_OFFSET_HOURS * 3600 * 1000);
-    const serverNow = new Date(serverMs);
-    
-    // Target next midnight reset (00:00:00) in server time
-    const nextReset = new Date(Date.UTC(
-      serverNow.getUTCFullYear(),
-      serverNow.getUTCMonth(),
-      serverNow.getUTCDate() + 1,
-      0, 0, 0
-    ));
-    
-    const diffSec = Math.max(0, Math.floor((nextReset.getTime() - serverNow.getTime()) / 1000));
-    const hrs = Math.floor(diffSec / 3600);
-    const mins = Math.floor((diffSec % 3600) / 60);
-    const secs = diffSec % 60;
-    
-    const pad = (n) => String(n).padStart(2, '0');
-    
-    const timerEl = document.getElementById('reset-timer');
-    if (timerEl) {
-      timerEl.textContent = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
-    }
-
-    // Determine current VS Day by day-of-week
-    const currentServerDay = serverNow.getUTCDay();
-    const vsInfo = VS_SCHEDULE[currentServerDay];
-    
-    const nameEl = document.getElementById('vs-day-name');
-    const descEl = document.getElementById('vs-day-desc');
-    
-    if (nameEl && descEl && vsInfo) {
-      nameEl.textContent = vsInfo.name;
-      descEl.textContent = vsInfo.desc;
-    }
-  }
-
-  function updateTimetableCountdowns() {
-    const now = new Date();
-
-    document.querySelectorAll('.event-card').forEach(card => {
-      const timeEl = card.querySelector('.event-time');
-      if (!timeEl) return;
-
-      const type = timeEl.dataset.eventType || 'weekly';
-      const targetHour = parseInt(timeEl.dataset.serverHour, 10);
-      const targetMin = parseInt(timeEl.dataset.serverMin, 10);
-      const utcTargetHour = (targetHour - SERVER_OFFSET_HOURS + 24) % 24;
-
-      let nextDate = null;
-
-      if (type === 'alternating') {
-        // 48-Hour Cycle (Marshall Guard)
-        const anchorStr = timeEl.dataset.anchor || '2026-09-06';
-        const [year, month, day] = anchorStr.split('-').map(Number);
-        let stepDate = new Date(Date.UTC(year, month - 1, day, utcTargetHour, targetMin, 0));
-
-        while (stepDate.getTime() <= now.getTime()) {
-          stepDate.setUTCDate(stepDate.getUTCDate() + 2);
-        }
-        nextDate = stepDate;
-
-      } else {
-        // Weekly Day Cycle (Zombie Siege, Desert Storm, Enemy Buster)
-        const rawDays = timeEl.dataset.serverDays || timeEl.dataset.serverDay || "0";
-        const targetDays = rawDays.split(',').map(d => parseInt(d.trim(), 10));
-        let minDiff = Infinity;
-
-        targetDays.forEach(d => {
-          let dayOffset = (d - now.getUTCDay() + 7) % 7;
-          let candidate = new Date(Date.UTC(
-            now.getUTCFullYear(),
-            now.getUTCMonth(),
-            now.getUTCDate() + dayOffset,
-            utcTargetHour,
-            targetMin,
-            0
-          ));
-
-          if (candidate.getTime() <= now.getTime()) {
-            candidate.setUTCDate(candidate.getUTCDate() + 7);
-          }
-
-          let diff = candidate.getTime() - now.getTime();
-          if (diff < minDiff) {
-            minDiff = diff;
-            nextDate = candidate;
-          }
-        });
-      }
-
-      const diffMs = nextDate.getTime() - now.getTime();
-      const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
-
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
+    function updateLiveServerReset() {
+      const now = new Date();
+      const serverMs = now.getTime() + (SERVER_OFFSET_HOURS * 3600 * 1000);
+      const serverNow = new Date(serverMs);
+      
+      const nextReset = new Date(Date.UTC(
+        serverNow.getUTCFullYear(),
+        serverNow.getUTCMonth(),
+        serverNow.getUTCDate() + 1,
+        0, 0, 0
+      ));
+      
+      const diffSec = Math.max(0, Math.floor((nextReset.getTime() - serverNow.getTime()) / 1000));
+      const hrs = Math.floor(diffSec / 3600);
+      const mins = Math.floor((diffSec % 3600) / 60);
+      const secs = diffSec % 60;
+      
       const pad = (n) => String(n).padStart(2, '0');
-
-      let timerText = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-      if (days > 0) {
-        timerText = `${days}d ` + timerText;
+      
+      const timerEl = document.getElementById('reset-timer');
+      if (timerEl) {
+        timerEl.textContent = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
       }
 
-      timeEl.textContent = timerText;
-    });
-  }
+      const currentServerDay = serverNow.getUTCDay();
+      const vsInfo = VS_SCHEDULE[currentServerDay];
+      
+      const nameEl = document.getElementById('vs-day-name');
+      const descEl = document.getElementById('vs-day-desc');
+      
+      if (nameEl && descEl && vsInfo) {
+        nameEl.textContent = vsInfo.name;
+        descEl.textContent = vsInfo.desc;
+      }
+    }
 
-  // --- RUN ONCE AT LOAD, THEN TICK EVERY SECOND ---
-  document.addEventListener('DOMContentLoaded', () => {
-    updateTimetableCountdowns();
-    updateLiveServerReset();
+    function updateTimetableCountdowns() {
+      const now = new Date();
 
-    setInterval(() => {
+      document.querySelectorAll('.event-card').forEach(card => {
+        const timeEl = card.querySelector('.event-time');
+        if (!timeEl) return;
+
+        const type = timeEl.dataset.eventType || 'weekly';
+        const targetHour = parseInt(timeEl.dataset.serverHour, 10);
+        const targetMin = parseInt(timeEl.dataset.serverMin, 10);
+        const utcTargetHour = (targetHour - SERVER_OFFSET_HOURS + 24) % 24;
+
+        let nextDate = null;
+
+        if (type === 'alternating') {
+          const anchorStr = timeEl.dataset.anchor || '2026-09-06';
+          const [year, month, day] = anchorStr.split('-').map(Number);
+          let stepDate = new Date(Date.UTC(year, month - 1, day, utcTargetHour, targetMin, 0));
+
+          while (stepDate.getTime() <= now.getTime()) {
+            stepDate.setUTCDate(stepDate.getUTCDate() + 2);
+          }
+          nextDate = stepDate;
+
+        } else {
+          const rawDays = timeEl.dataset.serverDays || timeEl.dataset.serverDay || "0";
+          const targetDays = rawDays.split(',').map(d => parseInt(d.trim(), 10));
+          let minDiff = Infinity;
+
+          targetDays.forEach(d => {
+            let dayOffset = (d - now.getUTCDay() + 7) % 7;
+            let candidate = new Date(Date.UTC(
+              now.getUTCFullYear(),
+              now.getUTCMonth(),
+              now.getUTCDate() + dayOffset,
+              utcTargetHour,
+              targetMin,
+              0
+            ));
+
+            if (candidate.getTime() <= now.getTime()) {
+              candidate.setUTCDate(candidate.getUTCDate() + 7);
+            }
+
+            let diff = candidate.getTime() - now.getTime();
+            if (diff < minDiff) {
+              minDiff = diff;
+              nextDate = candidate;
+            }
+          });
+        }
+
+        const diffMs = nextDate.getTime() - now.getTime();
+        const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        const pad = (n) => String(n).padStart(2, '0');
+
+        let timerText = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+        if (days > 0) {
+          timerText = `${days}d ` + timerText;
+        }
+
+        timeEl.textContent = timerText;
+      });
+    }
+
+    // --- INITIALIZE EVERYTHING ONCE DOM IS READY ---
+    document.addEventListener('DOMContentLoaded', () => {
       updateTimetableCountdowns();
       updateLiveServerReset();
-    }, 1000);
-  });
 
-  // Bio Modal Logic
-const bioModalBackdrop = document.getElementById('bioModalBackdrop');
-const bioModalClose = document.getElementById('bioModalClose');
-const bioModalName = document.getElementById('bioModalName');
-const bioModalRole = document.getElementById('bioModalRole');
-const bioModalText = document.getElementById('bioModalText');
+      setInterval(() => {
+        updateTimetableCountdowns();
+        updateLiveServerReset();
+      }, 1000);
 
-document.addEventListener('click', (e) => {
-  const target = e.target.closest('[data-bio]');
-  if (target) {
-    // Extract name (ignoring child elements if any)
-    const name = target.childNodes[0].textContent.trim();
-    const role = target.getAttribute('data-role') || 'WARRIOR OF GRIMM';
-    const bio = target.getAttribute('data-bio');
+      // Bio Modal Logic
+      const bioModalBackdrop = document.getElementById('bioModalBackdrop');
+      const bioModalClose = document.getElementById('bioModalClose');
+      const bioModalName = document.getElementById('bioModalName');
+      const bioModalRole = document.getElementById('bioModalRole');
+      const bioModalText = document.getElementById('bioModalText');
 
-    bioModalName.textContent = name;
-    bioModalRole.textContent = role;
-    bioModalText.textContent = bio;
+      if (!bioModalBackdrop) return;
 
-    bioModalBackdrop.classList.add('active');
-  }
-});
+      document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-bio]');
+        if (target) {
+          // Finds the player name text safely
+          let name = '';
+          for (let node of target.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+              name = node.textContent.trim();
+              break;
+            }
+          }
+          if (!name) name = target.innerText.split('\n')[0].trim();
 
-// Close handlers
-const closeBioModal = () => bioModalBackdrop.classList.remove('active');
-bioModalClose.addEventListener('click', closeBioModal);
-bioModalBackdrop.addEventListener('click', (e) => {
-  if (e.target === bioModalBackdrop) closeBioModal();
-});
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeBioModal();
-});
-</script>
+          const role = target.getAttribute('data-role') || 'WARRIOR OF GRIMM';
+          const bio = target.getAttribute('data-bio');
 
-  <!-- BIO MODAL -->
-<div class="bio-modal-backdrop" id="bioModalBackdrop">
-  <div class="bio-modal">
-    <button class="bio-modal-close" id="bioModalClose">&times;</button>
-    <div class="bio-modal-role" id="bioModalRole"></div>
-    <div class="bio-modal-name" id="bioModalName"></div>
-    <div class="bio-modal-divider"></div>
-    <div class="bio-modal-text" id="bioModalText"></div>
-  </div>
-</div>
-  
+          bioModalName.textContent = name;
+          bioModalRole.textContent = role;
+          bioModalText.textContent = bio;
+
+          bioModalBackdrop.classList.add('active');
+        }
+      });
+
+      const closeBioModal = () => bioModalBackdrop.classList.remove('active');
+
+      if (bioModalClose) bioModalClose.addEventListener('click', closeBioModal);
+      bioModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === bioModalBackdrop) closeBioModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeBioModal();
+      });
+    });
+  </script>
+
 </body>
 </html>
