@@ -1264,6 +1264,38 @@
       height: 22px;
       fill: currentColor;
     }
+
+    /* =========================================
+       MEMBER RAFFLE (JUMPING GLOW & WINNER)
+    ========================================= */
+    .members-grid div.raffle-scanning {
+      position: relative;
+      z-index: 5;
+      background: rgba(209, 138, 69, 0.32) !important;
+      color: #ffffff !important;
+      outline: 2px solid #f0bd75 !important;
+      outline-offset: -1px;
+      box-shadow: 0 0 16px rgba(240, 189, 117, 0.7);
+      transform: scale(1.08);
+      transition: transform 0.05s ease, background 0.05s ease;
+    }
+
+    .members-grid div.raffle-winner {
+      position: relative;
+      z-index: 6;
+      background: rgba(209, 138, 69, 0.45) !important;
+      color: #ffffff !important;
+      outline: 2px solid #ffd4a8 !important;
+      outline-offset: -1px;
+      box-shadow: 0 0 25px rgba(240, 189, 117, 0.9), 0 0 50px rgba(209, 138, 69, 0.5);
+      animation: winnerPulse 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes winnerPulse {
+      from { transform: scale(1.08); }
+      to { transform: scale(1.14); }
+    }
+    
   </style>
 </head>
 
@@ -1618,6 +1650,77 @@
     </div>
 
   </div>
+
+      <!-- RAFFLE ACTION BUTTON -->
+    <div style="text-align: center; margin: 45px auto 20px;">
+      <button id="raffle-trigger-btn" style="
+        background: rgba(209, 138, 69, 0.15);
+        border: 1px solid rgba(209, 138, 69, 0.6);
+        color: #f0bd75;
+        font-family: 'Cinzel', serif;
+        font-size: 13px;
+        letter-spacing: 3px;
+        padding: 14px 28px;
+        cursor: pointer;
+        border-radius: 3px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 15px rgba(209, 138, 69, 0.2);
+      ">
+        ᛟ CAST THE RUNES (RAFFLE) ᛟ
+      </button>
+    </div>
+
+    <!-- RAFFLE WINNER MODAL -->
+    <div id="raffle-modal" style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(5, 8, 12, 0.88);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    ">
+      <div style="
+        background: #0d1218;
+        border: 1px solid rgba(209, 138, 69, 0.5);
+        box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 20px rgba(209, 138, 69, 0.2);
+        padding: 35px 25px;
+        border-radius: 4px;
+        max-width: 420px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+      ">
+        <div style="font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: #d18a45; margin-bottom: 8px;">
+          THE GODS HAVE CHOSEN
+        </div>
+        <div id="raffle-display-name" style="
+          font-family: 'Cinzel', serif;
+          font-size: 26px;
+          letter-spacing: 2px;
+          color: #e5edf3;
+          min-height: 40px;
+          margin: 15px 0;
+          text-shadow: 0 0 12px rgba(240, 189, 117, 0.4);
+        ">
+          ...
+        </div>
+        <button onclick="document.getElementById('raffle-modal').style.display = 'none'" style="
+          background: transparent;
+          border: 1px solid rgba(160, 190, 210, 0.3);
+          color: #8da7b8;
+          font-family: 'Cinzel', serif;
+          font-size: 10px;
+          letter-spacing: 2px;
+          padding: 8px 18px;
+          cursor: pointer;
+          margin-top: 10px;
+        ">
+          CLOSE
+        </button>
+      </div>
+    </div>
 
 </section>
 
@@ -1981,207 +2084,287 @@
 
 
   <!-- ======================================
-       SCRIPTS
+       ALLIANCE SCRIPTS (CONSOLIDATED)
   ======================================= -->
-
   <script>
-    // Subtle parallax movement for the mountain layer
+    // --------------------------------------------------
+    // 1. PARALLAX EFFECT
+    // --------------------------------------------------
     const mountains = document.querySelector(".mountains");
-
     window.addEventListener("scroll", () => {
       const scroll = window.scrollY;
-
       if (mountains) {
-        mountains.style.transform =
-          `translateY(${scroll * 0.08}px)`;
+        mountains.style.transform = `translateY(${scroll * 0.08}px)`;
       }
     });
 
-    // Background Audio Handling
+    // --------------------------------------------------
+    // 2. BACKGROUND AUDIO SYSTEM
+    // --------------------------------------------------
     const audio = document.getElementById("bg-music");
     const toggleBtn = document.getElementById("audio-toggle");
     const audioStatus = document.getElementById("audio-status");
     const audioIcon = document.getElementById("audio-icon");
 
-    // Set background volume (0.05 = 5% volume)
-    audio.volume = 0.05;
+    if (audio) {
+      audio.volume = 0.05;
 
-    // Play audio on the user's first click anywhere on the page
-    window.addEventListener("click", (e) => {
-      if (e.target.closest("#audio-toggle")) return;
-      if (audio.paused) {
-        audio.play().catch((err) => {
-          console.error("Audio playback error:", err);
-        });
-        audioStatus.innerText = "SOUND: ON";
-        audioIcon.innerText = "♪";
-      }
-    }, { once: true });
-
-    // Floating toggle button click behavior
-    toggleBtn.addEventListener("click", () => {
-      if (audio.paused) {
-        audio.play();
-        audioStatus.innerText = "SOUND: ON";
-        audioIcon.innerText = "♪";
-      } else {
-        audio.pause();
-        audioStatus.innerText = "SOUND: OFF";
-        audioIcon.innerText = "✕";
-      }
-    });
-
-    // Automatically count roster members (R5 + 10 R4s + listed members)
-    const membersGridCount = document.querySelectorAll(".members-grid div").length;
-    const r4Count = document.querySelectorAll(".r4-grid .r4-card").length;
-    const r5Count = document.querySelectorAll(".r5-card").length;
-    
-    const totalCount = membersGridCount + r4Count + r5Count;
-    const countElement = document.getElementById("member-count");
-    if (countElement) {
-      countElement.innerText = totalCount;
-    }
-  </script>
-
-<script>
-  // Server runs 2 hours behind standard UTC (-2)
-  const SERVER_OFFSET_HOURS = -2;
-
-  // --- VS DUEL SCHEDULE DEFINITION ---
-  const VS_SCHEDULE = [
-    { name: "Day 7 • Rest & Prep", desc: "Have the day off. Collect your Rewards." },      // 0 = Sun
-    { name: "Day 1 • Radar Training", desc: "Radar, Gathering, Stamina, Hero EXP & Drone Data/Chips/Parts" },        // 1 = Mon
-    { name: "Day 2 • Base Expansion", desc: "Building Power, Survivors & UR Tasks/Trucks" }, // 2 = Tue
-    { name: "Day 3 • Age of Science", desc: "Radar, Tech (Valor) Research & Drone Components" },       // 3 = Wed
-    { name: "Day 4 • Train Heroes", desc: "Hero Recruiting, Leveling, Promoting, Skill Upgrades & EW Shards" },          // 4 = Thu
-    { name: "Day 5 • Total Mobilization", desc: "Radar, Overlord, Train Troops, Building/Tech Power & Speedups." },  // 5 = Fri
-    { name: "Day 6 • Enemy Buster", desc: "Troop Kills, Speedups & UR Tasks/Trucks" } // 6 = Sat
-  ];
-
-  function updateLiveServerReset() {
-    const now = new Date();
-    
-    // Shift device time to server time
-    const serverMs = now.getTime() + (SERVER_OFFSET_HOURS * 3600 * 1000);
-    const serverNow = new Date(serverMs);
-    
-    // Target next midnight reset (00:00:00) in server time
-    const nextReset = new Date(Date.UTC(
-      serverNow.getUTCFullYear(),
-      serverNow.getUTCMonth(),
-      serverNow.getUTCDate() + 1,
-      0, 0, 0
-    ));
-    
-    const diffSec = Math.max(0, Math.floor((nextReset.getTime() - serverNow.getTime()) / 1000));
-    const hrs = Math.floor(diffSec / 3600);
-    const mins = Math.floor((diffSec % 3600) / 60);
-    const secs = diffSec % 60;
-    
-    const pad = (n) => String(n).padStart(2, '0');
-    
-    const timerEl = document.getElementById('reset-timer');
-    if (timerEl) {
-      timerEl.textContent = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
-    }
-
-    // Determine current VS Day by day-of-week
-    const currentServerDay = serverNow.getUTCDay();
-    const vsInfo = VS_SCHEDULE[currentServerDay];
-    
-    const nameEl = document.getElementById('vs-day-name');
-    const descEl = document.getElementById('vs-day-desc');
-    
-    if (nameEl && descEl && vsInfo) {
-      nameEl.textContent = vsInfo.name;
-      descEl.textContent = vsInfo.desc;
-    }
-  }
-
-  function updateTimetableCountdowns() {
-    const now = new Date();
-
-    document.querySelectorAll('.event-card').forEach(card => {
-      const timeEl = card.querySelector('.event-time');
-      if (!timeEl) return;
-
-      const type = timeEl.dataset.eventType || 'weekly';
-      const targetHour = parseInt(timeEl.dataset.serverHour, 10);
-      const targetMin = parseInt(timeEl.dataset.serverMin, 10);
-      const utcTargetHour = (targetHour - SERVER_OFFSET_HOURS + 24) % 24;
-
-      let nextDate = null;
-
-      if (type === 'alternating') {
-        // 48-Hour Cycle (Marshall Guard)
-        const anchorStr = timeEl.dataset.anchor || '2026-09-06';
-        const [year, month, day] = anchorStr.split('-').map(Number);
-        let stepDate = new Date(Date.UTC(year, month - 1, day, utcTargetHour, targetMin, 0));
-
-        while (stepDate.getTime() <= now.getTime()) {
-          stepDate.setUTCDate(stepDate.getUTCDate() + 2);
+      window.addEventListener("click", (e) => {
+        if (e.target.closest("#audio-toggle")) return;
+        if (audio.paused) {
+          audio.play().catch((err) => {
+            console.error("Audio playback error:", err);
+          });
+          if (audioStatus) audioStatus.innerText = "SOUND: ON";
+          if (audioIcon) audioIcon.innerText = "♪";
         }
-        nextDate = stepDate;
+      }, { once: true });
 
-      } else {
-        // Weekly Day Cycle (Zombie Siege, Desert Storm, Enemy Buster)
-        const rawDays = timeEl.dataset.serverDays || timeEl.dataset.serverDay || "0";
-        const targetDays = rawDays.split(',').map(d => parseInt(d.trim(), 10));
-        let minDiff = Infinity;
-
-        targetDays.forEach(d => {
-          let dayOffset = (d - now.getUTCDay() + 7) % 7;
-          let candidate = new Date(Date.UTC(
-            now.getUTCFullYear(),
-            now.getUTCMonth(),
-            now.getUTCDate() + dayOffset,
-            utcTargetHour,
-            targetMin,
-            0
-          ));
-
-          if (candidate.getTime() <= now.getTime()) {
-            candidate.setUTCDate(candidate.getUTCDate() + 7);
-          }
-
-          let diff = candidate.getTime() - now.getTime();
-          if (diff < minDiff) {
-            minDiff = diff;
-            nextDate = candidate;
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+          if (audio.paused) {
+            audio.play();
+            if (audioStatus) audioStatus.innerText = "SOUND: ON";
+            if (audioIcon) audioIcon.innerText = "♪";
+          } else {
+            audio.pause();
+            if (audioStatus) audioStatus.innerText = "SOUND: OFF";
+            if (audioIcon) audioIcon.innerText = "✕";
           }
         });
       }
+    }
 
-      const diffMs = nextDate.getTime() - now.getTime();
-      const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+    // --------------------------------------------------
+    // 3. AUTOMATIC MEMBER ROSTER COUNTER
+    // --------------------------------------------------
+    function updateMemberCount() {
+      const membersGridCount = document.querySelectorAll(".members-grid div").length;
+      const r4Count = document.querySelectorAll(".r4-grid .r4-card").length;
+      const r5Count = document.querySelectorAll(".r5-card").length;
+      const totalCount = membersGridCount + r4Count + r5Count;
+      
+      const countElement = document.getElementById("member-count");
+      if (countElement) {
+        countElement.innerText = totalCount;
+      }
+    }
 
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
+    // --------------------------------------------------
+    // 4. SERVER RESET & LIVE TIMETABLE COUNTDOWNS
+    // --------------------------------------------------
+    const SERVER_OFFSET_HOURS = -2; // Server runs 2 hours behind standard UTC
 
+    const VS_SCHEDULE = [
+      { name: "Day 7 • Rest & Prep", desc: "Have the day off. Collect your Rewards." },
+      { name: "Day 1 • Radar Training", desc: "Radar, Gathering, Stamina, Hero EXP & Drone Data/Chips/Parts" },
+      { name: "Day 2 • Base Expansion", desc: "Building Power, Survivors & UR Tasks/Trucks" },
+      { name: "Day 3 • Age of Science", desc: "Radar, Tech (Valor) Research & Drone Components" },
+      { name: "Day 4 • Train Heroes", desc: "Hero Recruiting, Leveling, Promoting, Skill Upgrades & EW Shards" },
+      { name: "Day 5 • Total Mobilization", desc: "Radar, Train Troops, Building/Tech Power & Speedups." },
+      { name: "Day 6 • Enemy Buster", desc: "Troop Kills, Speedups & UR Tasks/Trucks" }
+    ];
+
+    function updateLiveServerReset() {
+      const now = new Date();
+      const serverMs = now.getTime() + (SERVER_OFFSET_HOURS * 3600 * 1000);
+      const serverNow = new Date(serverMs);
+      
+      const nextReset = new Date(Date.UTC(
+        serverNow.getUTCFullYear(),
+        serverNow.getUTCMonth(),
+        serverNow.getUTCDate() + 1,
+        0, 0, 0
+      ));
+      
+      const diffSec = Math.max(0, Math.floor((nextReset.getTime() - serverNow.getTime()) / 1000));
+      const hrs = Math.floor(diffSec / 3600);
+      const mins = Math.floor((diffSec % 3600) / 60);
+      const secs = diffSec % 60;
+      
       const pad = (n) => String(n).padStart(2, '0');
-
-      let timerText = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-      if (days > 0) {
-        timerText = `${days}d ` + timerText;
+      const timerEl = document.getElementById('reset-timer');
+      if (timerEl) {
+        timerEl.textContent = `${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`;
       }
 
-      timeEl.textContent = timerText;
-    });
-  }
+      const currentServerDay = serverNow.getUTCDay();
+      const vsInfo = VS_SCHEDULE[currentServerDay];
+      const nameEl = document.getElementById('vs-day-name');
+      const descEl = document.getElementById('vs-day-desc');
+      
+      if (nameEl && descEl && vsInfo) {
+        nameEl.textContent = vsInfo.name;
+        descEl.textContent = vsInfo.desc;
+      }
+    }
 
-  // --- RUN ONCE AT LOAD, THEN TICK EVERY SECOND ---
-  document.addEventListener('DOMContentLoaded', () => {
-    updateTimetableCountdowns();
-    updateLiveServerReset();
+    function updateTimetableCountdowns() {
+      const now = new Date();
 
-    setInterval(() => {
+      document.querySelectorAll('.event-card').forEach(card => {
+        const timeEl = card.querySelector('.event-time');
+        if (!timeEl) return;
+
+        const type = timeEl.dataset.eventType || 'weekly';
+        const targetHour = parseInt(timeEl.dataset.serverHour, 10);
+        const targetMin = parseInt(timeEl.dataset.serverMin, 10);
+        const utcTargetHour = (targetHour - SERVER_OFFSET_HOURS + 24) % 24;
+
+        let nextDate = null;
+
+        if (type === 'alternating') {
+          const anchorStr = timeEl.dataset.anchor || '2026-09-06';
+          const [year, month, day] = anchorStr.split('-').map(Number);
+          let stepDate = new Date(Date.UTC(year, month - 1, day, utcTargetHour, targetMin, 0));
+
+          while (stepDate.getTime() <= now.getTime()) {
+            stepDate.setUTCDate(stepDate.getUTCDate() + 2);
+          }
+          nextDate = stepDate;
+
+        } else {
+          const rawDays = timeEl.dataset.serverDays || timeEl.dataset.serverDay || "0";
+          const targetDays = rawDays.split(',').map(d => parseInt(d.trim(), 10));
+          let minDiff = Infinity;
+
+          targetDays.forEach(d => {
+            let dayOffset = (d - now.getUTCDay() + 7) % 7;
+            let candidate = new Date(Date.UTC(
+              now.getUTCFullYear(),
+              now.getUTCMonth(),
+              now.getUTCDate() + dayOffset,
+              utcTargetHour,
+              targetMin,
+              0
+            ));
+
+            if (candidate.getTime() <= now.getTime()) {
+              candidate.setUTCDate(candidate.getUTCDate() + 7);
+            }
+
+            let diff = candidate.getTime() - now.getTime();
+            if (diff < minDiff) {
+              minDiff = diff;
+              nextDate = candidate;
+            }
+          });
+        }
+
+        const diffMs = nextDate.getTime() - now.getTime();
+        const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+
+        const days = Math.floor(totalSeconds / 86400);
+        const hours = Math.floor((totalSeconds % 86400) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        const pad = (n) => String(n).padStart(2, '0');
+
+        let timerText = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+        if (days > 0) {
+          timerText = `${days}d ` + timerText;
+        }
+
+        timeEl.textContent = timerText;
+      });
+    }
+
+    // --------------------------------------------------
+    // 5. PROTECTED MEMBER RAFFLE (JUMPING GLOW)
+    // --------------------------------------------------
+    const RAFFLE_KEY = "GRMMGRMM";
+    let isOfficerAuthenticated = sessionStorage.getItem("grimm_officer_auth") === "true";
+    const raffleBtn = document.getElementById("raffle-trigger-btn");
+
+    if (raffleBtn) {
+      raffleBtn.addEventListener("click", () => {
+        if (!isOfficerAuthenticated) {
+          const inputKey = prompt("ᚦ ENTER R4 / R5 WAR COUNCIL KEY TO CAST RUNES:");
+          if (inputKey === RAFFLE_KEY) {
+            isOfficerAuthenticated = true;
+            sessionStorage.setItem("grimm_officer_auth", "true");
+          } else {
+            if (inputKey !== null) {
+              alert("Access denied. The runes remain silent.");
+            }
+            return;
+          }
+        }
+
+        const memberCells = Array.from(document.querySelectorAll(".members-grid div"))
+          .filter(el => el.textContent.trim().length > 0);
+
+        if (memberCells.length === 0) return;
+
+        raffleBtn.disabled = true;
+        raffleBtn.style.opacity = "0.5";
+        raffleBtn.style.cursor = "not-allowed";
+
+        memberCells.forEach(el => el.classList.remove("raffle-scanning", "raffle-winner"));
+
+        let currentIndex = Math.floor(Math.random() * memberCells.length);
+        let delay = 40;
+        let totalJumps = 0;
+        const minJumps = 42;
+
+        function jumpToNext() {
+          if (memberCells[currentIndex]) {
+            memberCells[currentIndex].classList.remove("raffle-scanning");
+          }
+
+          currentIndex = (currentIndex + 1) % memberCells.length;
+          const activeCell = memberCells[currentIndex];
+          activeCell.classList.add("raffle-scanning");
+          activeCell.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+          totalJumps++;
+
+          if (totalJumps > minJumps) {
+            delay *= 1.12;
+          }
+
+          if (delay > 450) {
+            activeCell.classList.remove("raffle-scanning");
+            activeCell.classList.add("raffle-winner");
+
+            raffleBtn.disabled = false;
+            raffleBtn.style.opacity = "1";
+            raffleBtn.style.cursor = "pointer";
+
+            setTimeout(() => {
+              const modal = document.getElementById("raffle-modal");
+              const display = document.getElementById("raffle-display-name");
+              if (modal && display) {
+                display.textContent = activeCell.textContent.trim();
+                modal.style.display = "flex";
+              }
+            }, 700);
+
+            return;
+          }
+
+          setTimeout(jumpToNext, delay);
+        }
+
+        jumpToNext();
+      });
+    }
+
+    // --------------------------------------------------
+    // 6. INITIALIZATION
+    // --------------------------------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      updateMemberCount();
       updateTimetableCountdowns();
       updateLiveServerReset();
-    }, 1000);
-  });
-</script>
+
+      setInterval(() => {
+        updateTimetableCountdowns();
+        updateLiveServerReset();
+      }, 1000);
+    });
+  </script>
   
 </body>
 </html>
