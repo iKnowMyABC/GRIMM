@@ -2304,9 +2304,9 @@
         memberCells.forEach(el => el.classList.remove("raffle-scanning", "raffle-winner"));
 
         let currentIndex = Math.floor(Math.random() * memberCells.length);
-        let delay = 40;
+        let delay = 120;       // Slower, clearer start (was 40ms)
         let totalJumps = 0;
-        const minJumps = 42;
+        const minJumps = 35;   // Sustained hops before braking begins
 
         function jumpToNext() {
           if (memberCells[currentIndex]) {
@@ -2326,11 +2326,13 @@
 
           totalJumps++;
 
+          // Smooth, dramatic deceleration
           if (totalJumps > minJumps) {
-            delay *= 1.12;
+            delay *= 1.08;     // Gradual braking (was 1.12)
           }
 
-          if (delay > 450) {
+          // Stops when the delay between jumps stretches past ~600ms
+          if (delay > 600) {
             activeCell.classList.remove("raffle-scanning");
             activeCell.classList.add("raffle-winner");
 
