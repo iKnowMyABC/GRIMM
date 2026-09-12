@@ -2313,7 +2313,13 @@
             memberCells[currentIndex].classList.remove("raffle-scanning");
           }
 
-          currentIndex = (currentIndex + 1) % memberCells.length;
+          // Pick a random box, ensuring it doesn't pick the exact same box twice in a row
+          let nextIndex;
+          do {
+            nextIndex = Math.floor(Math.random() * memberCells.length);
+          } while (nextIndex === currentIndex && memberCells.length > 1);
+
+          currentIndex = nextIndex;
           const activeCell = memberCells[currentIndex];
           activeCell.classList.add("raffle-scanning");
           activeCell.scrollIntoView({ behavior: "smooth", block: "nearest" });
