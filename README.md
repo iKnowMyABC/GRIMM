@@ -1,2 +1,3 @@
 # GRIMM
-[grmm] GRIMM - 2109 - Last War
+GRIMM [grmm] — Server 2109
+https://iknowmyabc.github.io/GRIMM/
