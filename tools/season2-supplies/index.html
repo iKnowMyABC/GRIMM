@@ -268,10 +268,10 @@
       z-index: 9999 !important;
     }
 
+    /* Update your CSS selector to match the JS class name */
     .stronghold-pin.is-found {
-      opacity: 0.22 !important;
-      border-color: #3b434a !important;
-      filter: grayscale(100%);
+      opacity: 0.5 !important;
+      filter: grayscale(0.5) brightness(0.9);
     }
 
     #map.hide-found .stronghold-pin.is-found {
@@ -710,7 +710,7 @@
             <button 
               class="popup-btn ${isFound ? 'btn-unmark' : 'btn-mark'}" 
               onclick="toggleFoundFirebase('${key}')">
-              ${isFound ? 'Mark Unclaimed' : '✓ 1-Click Mark Found'}
+              ${isFound ? 'Mark Unclaimed' : 'Mark as Found'}
             </button>
           </div>
 
