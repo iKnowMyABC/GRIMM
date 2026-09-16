@@ -5,98 +5,209 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GRIMM [grmm] — S2 Scattered Supplies Tracker</title>
   
-  <!-- Leaflet & Cinzel Fonts -->
+  <!-- Leaflet & Shared Fonts -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --ice: #dcecff;
+      --ice-dim: #8ea9c2;
+      --steel: #607487;
+      --dark: #070a0e;
+      --dark-2: #0c1117;
+      --fire: #d18a45;
+      --fire-light: #f0bd75;
+      --white: #f4f7fa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
     body, html {
-      margin: 0; padding: 0; height: 100%;
-      background: #090d12;
+      height: 100%;
+      background: var(--dark);
       font-family: 'Inter', sans-serif;
-      color: #c4d0dc;
+      color: var(--white);
       overflow: hidden;
     }
 
     #map { width: 100%; height: 100vh; background: #070a0e; }
 
     /* =========================================
-       TOP WAR HEADER & HUD
+       SITE-WIDE NAVIGATION HEADER
     ========================================= */
-    .war-header {
-      position: absolute;
+    nav {
+      position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      z-index: 1000;
-      background: rgba(10, 14, 19, 0.94);
-      border-bottom: 1px solid rgba(209, 138, 69, 0.35);
-      padding: 10px 20px;
+      width: 100%;
+      height: 76px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+      justify-content: space-between;
+      padding: 0 6%;
+      z-index: 2000;
+      background: linear-gradient(
+        to bottom,
+        rgba(4, 7, 10, 0.95),
+        rgba(4, 7, 10, 0)
+      );
+      pointer-events: auto;
     }
 
-    .header-brand {
+    .nav-brand {
+      font-family: "Cinzel", serif;
+      font-weight: 700;
+      letter-spacing: 5px;
+      font-size: 18px;
+      color: var(--ice);
+      text-decoration: none;
+    }
+
+    .nav-brand small {
+      display: block;
+      font-family: "Inter", sans-serif;
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: var(--ice-dim);
+      margin-top: 2px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 34px;
+      align-items: center;
+    }
+
+    nav a {
+      color: #aebdca;
+      text-decoration: none;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 3px;
+      transition: color .3s;
+    }
+
+    nav a:hover {
+      color: white;
+    }
+
+    /* =========================================
+       NAV DROPDOWN (TOOLS)
+    ========================================= */
+    .nav-dropdown {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-dropdown-btn {
+      background: transparent;
+      border: none;
+      color: #aebdca;
+      font-family: "Inter", sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0;
+      transition: color .3s;
+    }
+
+    .nav-dropdown-btn:hover,
+    .nav-dropdown:hover .nav-dropdown-btn {
+      color: white;
+    }
+
+    .dropdown-arrow {
+      font-size: 8px;
+      transition: transform 0.2s ease;
+      opacity: 0.7;
+    }
+
+    .nav-dropdown:hover .dropdown-arrow {
+      transform: rotate(180deg);
+      opacity: 1;
+    }
+
+    .nav-dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      min-width: 270px;
+      background: rgba(12, 17, 23, 0.95);
+      border: 1px solid rgba(160, 190, 210, 0.25);
+      border-radius: 4px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 2100;
+      padding: 6px 0;
+      text-align: left;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-content {
+      display: block;
+    }
+
+    .dropdown-item {
       display: flex;
       flex-direction: column;
-    }
-    .header-tag {
-      font-family: 'Cinzel', serif;
-      font-size: 9px;
-      letter-spacing: 2.5px;
-      color: #d18a45;
-      font-weight: 700;
-    }
-    .header-title {
-      font-family: 'Cinzel', serif;
-      font-size: 15px;
-      letter-spacing: 1.5px;
-      color: #f0bd75;
-      font-weight: 700;
-      margin: 0;
-      text-transform: uppercase;
+      padding: 12px 16px;
+      text-decoration: none;
+      transition: background 0.2s ease;
+      border-left: 2px solid transparent;
     }
 
-    .hub-link {
+    .dropdown-item:hover {
+      background: rgba(209, 138, 69, 0.12);
+      border-left: 2px solid var(--fire-light);
+    }
+
+    .dropdown-item-title {
       font-family: 'Cinzel', serif;
       font-size: 11px;
       letter-spacing: 1.5px;
-      color: #c4d0dc;
-      text-decoration: none;
-      border: 1px solid rgba(209, 138, 69, 0.4);
-      padding: 7px 14px;
-      border-radius: 3px;
-      background: rgba(209, 138, 69, 0.08);
-      transition: all 0.2s ease;
-      font-weight: 600;
-    }
-    .hub-link:hover {
-      background: rgba(209, 138, 69, 0.25);
-      border-color: #f0bd75;
-      color: #f0bd75;
+      color: var(--fire-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-transform: uppercase;
     }
 
-    /* Input HUD Controls */
+    .dropdown-item-desc {
+      font-size: 10px;
+      color: var(--ice-dim);
+      margin-top: 4px;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+      text-transform: none;
+    }
+
+    /* =========================================
+       MAP HUD & INPUT CONTROLS
+    ========================================= */
     .top-panel {
       position: absolute;
-      top: 66px;
+      top: 88px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
-      background: rgba(13, 18, 24, 0.95);
-      border: 1px solid rgba(209, 138, 69, 0.4);
-      border-radius: 4px;
-      padding: 6px 14px;
+      background: rgba(12, 17, 23, 0.85);
+      border: 1px solid rgba(160, 190, 210, 0.25);
+      border-radius: 6px;
+      padding: 8px 16px;
       display: flex;
       gap: 10px;
       align-items: center;
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.85);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(10px);
     }
 
@@ -105,21 +216,21 @@
       align-items: center;
       gap: 5px;
       background: #090d12;
-      border: 1px solid rgba(209, 138, 69, 0.3);
+      border: 1px solid rgba(160, 190, 210, 0.2);
       padding: 4px 8px;
-      border-radius: 3px;
+      border-radius: 4px;
     }
     .coord-field span {
       font-family: 'Cinzel', serif;
       font-weight: 700;
-      color: #f0bd75;
+      color: var(--fire-light);
       font-size: 11px;
     }
     .coord-field input {
       background: transparent;
       border: none;
       outline: none;
-      color: #f5ede2;
+      color: #fff;
       width: 46px;
       font-weight: 600;
       font-size: 13px;
@@ -128,37 +239,41 @@
 
     select.type-select {
       background: #090d12;
-      border: 1px solid rgba(209, 138, 69, 0.3);
-      color: #c4d0dc;
+      border: 1px solid rgba(160, 190, 210, 0.2);
+      color: var(--white);
       padding: 6px 10px;
-      border-radius: 3px;
-      font-size: 12px;
+      border-radius: 4px;
+      font-size: 11px;
       font-family: 'Cinzel', serif;
+      letter-spacing: 0.5px;
       outline: none;
       cursor: pointer;
     }
 
     .btn-action {
-      background: linear-gradient(135deg, #a66a2e, #825021);
-      border: 1px solid #f0bd75;
-      color: #fff;
+      background: rgba(209, 138, 69, 0.2);
+      border: 1px solid rgba(209, 138, 69, 0.6);
+      color: var(--fire-light);
       padding: 6px 14px;
-      border-radius: 3px;
+      border-radius: 4px;
       font-family: 'Cinzel', serif;
       font-weight: 700;
       font-size: 11px;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       cursor: pointer;
-      transition: filter 0.2s ease;
+      transition: all 0.2s ease;
     }
-    .btn-action:hover { filter: brightness(1.2); }
+    .btn-action:hover { 
+      background: rgba(209, 138, 69, 0.35);
+      color: #fff;
+    }
 
     .btn-secondary {
       background: #141b22;
-      border: 1px solid rgba(209, 138, 69, 0.3);
+      border: 1px solid rgba(160, 190, 210, 0.2);
       color: #9ab0c2;
       padding: 6px 12px;
-      border-radius: 3px;
+      border-radius: 4px;
       font-family: 'Cinzel', serif;
       font-size: 11px;
       letter-spacing: 1px;
@@ -168,40 +283,39 @@
     }
     .btn-secondary:hover {
       background: #1c2530;
-      color: #f0bd75;
-      border-color: #f0bd75;
+      color: var(--fire-light);
+      border-color: rgba(209, 138, 69, 0.4);
     }
 
-    /* Floating Bottom-Right HUD */
     .hud-coords {
       position: absolute;
       bottom: 18px;
       right: 18px;
       z-index: 1000;
-      background: rgba(13, 18, 24, 0.94);
-      border: 1px solid rgba(209, 138, 69, 0.4);
+      background: rgba(12, 17, 23, 0.85);
+      border: 1px solid rgba(160, 190, 210, 0.25);
       padding: 6px 14px;
-      border-radius: 3px;
+      border-radius: 4px;
       font-size: 12px;
       font-family: 'JetBrains Mono', monospace;
-      color: #9ab0c2;
+      color: #8ea9c2;
       pointer-events: none;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
     }
-    .hud-coords b { color: #f0bd75; }
+    .hud-coords b { color: var(--fire-light); }
 
-    /* Toast Status Notifications */
     #status-msg {
       position: absolute;
-      top: 118px;
+      top: 140px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
-      font-size: 12px;
+      font-size: 11px;
       font-family: 'Cinzel', serif;
       letter-spacing: 1px;
       padding: 6px 16px;
-      border-radius: 3px;
+      border-radius: 4px;
       display: none;
       font-weight: 700;
       box-shadow: 0 4px 15px rgba(0,0,0,0.8);
@@ -234,15 +348,15 @@
 
     /* Leaflet Popup Theme */
     .leaflet-popup-content-wrapper {
-      background: rgba(13, 18, 24, 0.97) !important;
-      border: 1px solid rgba(209, 138, 69, 0.5) !important;
+      background: rgba(12, 17, 23, 0.95) !important;
+      border: 1px solid rgba(209, 138, 69, 0.4) !important;
       border-radius: 4px !important;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9) !important;
       color: #c4d0dc !important;
     }
     .leaflet-popup-tip {
-      background: rgba(13, 18, 24, 0.97) !important;
-      border: 1px solid rgba(209, 138, 69, 0.5) !important;
+      background: rgba(12, 17, 23, 0.95) !important;
+      border: 1px solid rgba(209, 138, 69, 0.4) !important;
     }
 
     .popup-btn {
@@ -268,22 +382,50 @@
     .btn-mark:hover { filter: brightness(1.2); }
     .btn-unmark {
       background: #21262d;
-      border: 1px solid rgba(209, 138, 69, 0.3);
+      border: 1px solid rgba(160, 190, 210, 0.2);
       color: #8b949e;
     }
     .btn-unmark:hover { background: #2f3640; color: #fff; }
+
+    @media (max-width: 800px) {
+      nav ul { display: none; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top War Bar Header -->
-  <header class="war-header">
-    <div class="header-brand">
-      <div class="header-tag">ᛟ GRIMM ALLIANCE • SERVER 2109 ᛟ</div>
-      <h1 class="header-title">Season 2 — Scattered Supplies Tracker</h1>
-    </div>
-    <a href="../../#home" class="hub-link">← RETURN TO HUB</a>
-  </header>
+  <!-- NAVIGATION -->
+  <nav>
+    <a href="../../#home" class="nav-brand">
+      GRIMM
+      <small>[ grmm ]</small>
+    </a>
+
+    <ul>
+      <li><a href="../../#oath">Oath</a></li>
+      <li><a href="../../#hall">Hall</a></li>
+      <li><a href="../../#alliance">Alliance</a></li>
+      <li><a href="../../#schedule">Events</a></li>
+      <li><a href="../../#songs">Songs</a></li>
+      <li><a href="../../#chant">Chant</a></li>
+      <li><a href="../../#discord">Discord</a></li>
+
+      <!-- TOOLS DROPDOWN -->
+      <li class="nav-dropdown">
+        <button class="nav-dropdown-btn" type="button">
+          Tools <span class="dropdown-arrow">▼</span>
+        </button>
+        <div class="nav-dropdown-content">
+          <a href="./" class="dropdown-item">
+            <span class="dropdown-item-title">
+              Season 2 - Scattered Supplies Tracker <span>✓</span>
+            </span>
+            <span class="dropdown-item-desc">Real-time tracker (Server 2109)</span>
+          </a>
+        </div>
+      </li>
+    </ul>
+  </nav>
 
   <!-- Coordinate Control Panel -->
   <div class="top-panel">
@@ -387,10 +529,12 @@
       });
       marker.setIcon(icon);
 
+      const titleColor = data.color === '#00FF00' ? '#00e600' : data.color;
+
       const popupHtml = `
         <div style="color: #c4d0dc; font-size: 12px; font-family: 'Inter', sans-serif; min-width: 150px; padding: 4px 2px;">
-          <strong style="color: #f0bd75; font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.5px;">${data.label}</strong><br/>
-          <div style="margin: 4px 0; color: #8b9eb0; font-family: 'JetBrains Mono', monospace;">
+          <strong style="color: ${titleColor}; font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.5px; text-shadow: 0 0 8px ${titleColor}40;">${data.label}</strong><br/>
+          <div style="margin: 4px 0; color: #8ea9c2; font-family: 'JetBrains Mono', monospace;">
             Coords: <b style="color: #fff;">(${data.x}, ${data.y})</b>
           </div>
           <div style="font-size: 11px; font-weight: 700; color:${isFound ? '#40bf6a' : '#d18a45'}; margin-bottom: 6px;">
@@ -399,7 +543,7 @@
           <button 
             class="popup-btn ${isFound ? 'btn-unmark' : 'btn-mark'}" 
             onclick="toggleFoundFirebase('${key}')">
-            ${isFound ? 'Mark Unclaimed' : '✓ 1-Click Mark Found'}
+            ${isFound ? 'Mark Unclaimed' : 'Mark as Found'}
           </button>
         </div>
       `;
@@ -421,8 +565,8 @@
       const mapElement = document.getElementById('map');
 
       btn.textContent = hideFoundActive ? "Show Found" : "Hide Found";
-      btn.style.borderColor = hideFoundActive ? "#f0bd75" : "rgba(209, 138, 69, 0.3)";
-      btn.style.color = hideFoundActive ? "#f0bd75" : "#9ab0c2";
+      btn.style.borderColor = hideFoundActive ? "rgba(209, 138, 69, 0.6)" : "rgba(160, 190, 210, 0.2)";
+      btn.style.color = hideFoundActive ? "var(--fire-light)" : "#9ab0c2";
 
       if (hideFoundActive) {
         mapElement.classList.add('hide-found');
