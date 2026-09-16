@@ -596,8 +596,14 @@
       maxZoom: 3,
       zoomSnap: 0.25,
       zoomDelta: 0.5,
-      zoomControl: false,       // Disables default top-left control
-      attributionControl: false
+      zoomControl: false,
+      attributionControl: false,
+      wheelDebounceTime: 40,
+      inertia: true,
+      inertiaDeceleration: 3000,
+      fadeAnimation: true,
+      zoomAnimation: true,
+      markerZoomAnimation: true
     });
 
     // Mounts zoom buttons cleanly in the bottom-left corner
@@ -607,7 +613,12 @@
     L.imageOverlay('season-2-grid.png', bounds).addTo(map);
     map.fitBounds(bounds);
 
+    let lastCoordUpdate = 0;
     map.on('mousemove', (e) => {
+      const now = performance.now();
+      if (now - lastCoordUpdate < 60) return; // Drops redundant updates while dragging
+      lastCoordUpdate = now;
+
       const x = Math.round(e.latlng.lng);
       const y = Math.round(e.latlng.lat);
       if (x >= 0 && x <= MAP_LIMIT && y >= 0 && y <= MAP_LIMIT) {
