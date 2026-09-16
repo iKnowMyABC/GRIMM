@@ -3,130 +3,218 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Season 2 Live Server Map</title>
+  <title>GRIMM [grmm] — S2 Scattered Supplies Tracker</title>
+  
+  <!-- Leaflet & Cinzel Fonts -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
   <style>
     * { box-sizing: border-box; }
     body, html {
       margin: 0; padding: 0; height: 100%;
       background: #090d12;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
-      color: #c9d1d9;
+      font-family: 'Inter', sans-serif;
+      color: #c4d0dc;
       overflow: hidden;
     }
 
-    #map { width: 100%; height: 100vh; background: #090d12; }
+    #map { width: 100%; height: 100vh; background: #070a0e; }
 
-    /* Top HUD */
+    /* =========================================
+       TOP WAR HEADER & HUD
+    ========================================= */
+    .war-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 19, 0.94);
+      border-bottom: 1px solid rgba(209, 138, 69, 0.35);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .header-brand {
+      display: flex;
+      flex-direction: column;
+    }
+    .header-tag {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      color: #d18a45;
+      font-weight: 700;
+    }
+    .header-title {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      letter-spacing: 1.5px;
+      color: #f0bd75;
+      font-weight: 700;
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    .hub-link {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #c4d0dc;
+      text-decoration: none;
+      border: 1px solid rgba(209, 138, 69, 0.4);
+      padding: 7px 14px;
+      border-radius: 3px;
+      background: rgba(209, 138, 69, 0.08);
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+    .hub-link:hover {
+      background: rgba(209, 138, 69, 0.25);
+      border-color: #f0bd75;
+      color: #f0bd75;
+    }
+
+    /* Input HUD Controls */
     .top-panel {
       position: absolute;
-      top: 14px;
+      top: 66px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
-      background: rgba(13, 17, 23, 0.95);
-      border: 1px solid #30363d;
-      border-radius: 6px;
+      background: rgba(13, 18, 24, 0.95);
+      border: 1px solid rgba(209, 138, 69, 0.4);
+      border-radius: 4px;
       padding: 6px 14px;
       display: flex;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(10px);
     }
 
     .coord-field {
       display: flex;
       align-items: center;
-      gap: 4px;
-      background: #090d13;
-      border: 1px solid #30363d;
+      gap: 5px;
+      background: #090d12;
+      border: 1px solid rgba(209, 138, 69, 0.3);
       padding: 4px 8px;
-      border-radius: 4px;
+      border-radius: 3px;
     }
-    .coord-field span { font-weight: 700; color: #58a6ff; font-size: 11px; }
+    .coord-field span {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      color: #f0bd75;
+      font-size: 11px;
+    }
     .coord-field input {
       background: transparent;
       border: none;
       outline: none;
-      color: #fff;
-      width: 48px;
+      color: #f5ede2;
+      width: 46px;
       font-weight: 600;
       font-size: 13px;
-      font-family: monospace;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     select.type-select {
-      background: #090d13;
-      border: 1px solid #30363d;
-      color: #fff;
-      padding: 6px 8px;
-      border-radius: 4px;
+      background: #090d12;
+      border: 1px solid rgba(209, 138, 69, 0.3);
+      color: #c4d0dc;
+      padding: 6px 10px;
+      border-radius: 3px;
       font-size: 12px;
+      font-family: 'Cinzel', serif;
       outline: none;
+      cursor: pointer;
     }
 
     .btn-action {
-      background: #238636;
-      border: 1px solid #2ea043;
+      background: linear-gradient(135deg, #a66a2e, #825021);
+      border: 1px solid #f0bd75;
       color: #fff;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 3px;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 1px;
       cursor: pointer;
+      transition: filter 0.2s ease;
     }
-    .btn-action:hover { background: #2ea043; }
+    .btn-action:hover { filter: brightness(1.2); }
 
     .btn-secondary {
-      background: #21262d;
-      border: 1px solid #30363d;
-      color: #c9d1d9;
-      padding: 6px 10px;
-      border-radius: 4px;
-      font-size: 12px;
+      background: #141b22;
+      border: 1px solid rgba(209, 138, 69, 0.3);
+      color: #9ab0c2;
+      padding: 6px 12px;
+      border-radius: 3px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 1px;
       cursor: pointer;
       font-weight: 600;
+      transition: all 0.2s ease;
     }
-    .btn-secondary:hover { background: #30363d; color: #fff; }
+    .btn-secondary:hover {
+      background: #1c2530;
+      color: #f0bd75;
+      border-color: #f0bd75;
+    }
 
+    /* Floating Bottom-Right HUD */
     .hud-coords {
       position: absolute;
-      bottom: 15px;
-      right: 15px;
+      bottom: 18px;
+      right: 18px;
       z-index: 1000;
-      background: rgba(13, 17, 23, 0.9);
-      border: 1px solid #30363d;
-      padding: 6px 12px;
-      border-radius: 4px;
+      background: rgba(13, 18, 24, 0.94);
+      border: 1px solid rgba(209, 138, 69, 0.4);
+      padding: 6px 14px;
+      border-radius: 3px;
       font-size: 12px;
-      font-family: monospace;
-      color: #8b949e;
+      font-family: 'JetBrains Mono', monospace;
+      color: #9ab0c2;
       pointer-events: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
     }
-    .hud-coords b { color: #58a6ff; }
+    .hud-coords b { color: #f0bd75; }
 
+    /* Toast Status Notifications */
     #status-msg {
       position: absolute;
-      top: 66px;
+      top: 118px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
       font-size: 12px;
-      padding: 6px 14px;
-      border-radius: 4px;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 1px;
+      padding: 6px 16px;
+      border-radius: 3px;
       display: none;
-      font-weight: 600;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.8);
     }
-    .msg-error { background: #da3633; color: #fff; border: 1px solid #f85149; }
-    .msg-info { background: #1f6feb; color: #fff; }
-    .msg-success { background: #238636; color: #fff; border: 1px solid #2ea043; }
+    .msg-error { background: #5c1818; color: #ffb4b4; border: 1px solid #c73838; }
+    .msg-info { background: #183149; color: #9fd2ff; border: 1px solid #2f6ea3; }
+    .msg-success { background: #164024; color: #9df0b6; border: 1px solid #288046; }
 
     /* Pins */
     .stronghold-pin {
       border-radius: 50%;
       border: 1.5px solid #ffffff;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.95);
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
       transition: transform 0.1s ease, opacity 0.2s ease;
     }
     .stronghold-pin:hover {
@@ -134,39 +222,70 @@
       z-index: 9999 !important;
     }
 
-    /* Globally Marked as Found */
     .stronghold-pin.is-found {
       opacity: 0.22 !important;
-      border-color: #484f58 !important;
+      border-color: #3b434a !important;
       filter: grayscale(100%);
     }
 
-    /* Reliable CSS Filter to Hide Found Pins */
     #map.hide-found .stronghold-pin.is-found {
       display: none !important;
     }
 
-    /* Popup Buttons */
+    /* Leaflet Popup Theme */
+    .leaflet-popup-content-wrapper {
+      background: rgba(13, 18, 24, 0.97) !important;
+      border: 1px solid rgba(209, 138, 69, 0.5) !important;
+      border-radius: 4px !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9) !important;
+      color: #c4d0dc !important;
+    }
+    .leaflet-popup-tip {
+      background: rgba(13, 18, 24, 0.97) !important;
+      border: 1px solid rgba(209, 138, 69, 0.5) !important;
+    }
+
     .popup-btn {
       display: inline-block;
       width: 100%;
-      margin-top: 8px;
-      padding: 6px 0;
+      margin-top: 10px;
+      padding: 7px 0;
       font-size: 11px;
+      font-family: 'Cinzel', serif;
       font-weight: 700;
+      letter-spacing: 1px;
       text-align: center;
-      border-radius: 4px;
+      border-radius: 3px;
       border: none;
       cursor: pointer;
+      transition: filter 0.2s ease;
     }
-    .btn-mark { background: #238636; color: #fff; }
-    .btn-mark:hover { background: #2ea043; }
-    .btn-unmark { background: #30363d; color: #8b949e; }
-    .btn-unmark:hover { background: #21262d; color: #fff; }
+    .btn-mark {
+      background: linear-gradient(135deg, #266b37, #1d4e2a);
+      border: 1px solid #3eb85d;
+      color: #fff;
+    }
+    .btn-mark:hover { filter: brightness(1.2); }
+    .btn-unmark {
+      background: #21262d;
+      border: 1px solid rgba(209, 138, 69, 0.3);
+      color: #8b949e;
+    }
+    .btn-unmark:hover { background: #2f3640; color: #fff; }
   </style>
 </head>
 <body>
 
+  <!-- Top War Bar Header -->
+  <header class="war-header">
+    <div class="header-brand">
+      <div class="header-tag">ᛟ GRIMM ALLIANCE • SERVER 2109 ᛟ</div>
+      <h1 class="header-title">Season 2 — Scattered Supplies Tracker</h1>
+    </div>
+    <a href="../../#home" class="hub-link">← RETURN TO HUB</a>
+  </header>
+
+  <!-- Coordinate Control Panel -->
   <div class="top-panel">
     <div class="coord-field">
       <span>X</span>
@@ -196,7 +315,7 @@
   <div id="status-msg"></div>
   <div id="map"></div>
 
-  <!-- Leaflet and Firebase Realtime Database -->
+  <!-- Leaflet and Firebase Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -269,12 +388,14 @@
       marker.setIcon(icon);
 
       const popupHtml = `
-        <div style="color: #111; font-size: 12px; font-family: -apple-system, sans-serif; min-width: 140px;">
-          <strong style="color:${data.color === '#00FF00' ? '#008800' : data.color}; font-size:13px;">${data.label}</strong><br/>
-          <span>Coords: <b>(${data.x}, ${data.y})</b></span><br/>
-          <small style="color:${isFound ? '#238636' : '#666'}; font-weight:700;">
-            ${isFound ? '✅ Found by Community' : '⭕ Unclaimed'}
-          </small>
+        <div style="color: #c4d0dc; font-size: 12px; font-family: 'Inter', sans-serif; min-width: 150px; padding: 4px 2px;">
+          <strong style="color: #f0bd75; font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.5px;">${data.label}</strong><br/>
+          <div style="margin: 4px 0; color: #8b9eb0; font-family: 'JetBrains Mono', monospace;">
+            Coords: <b style="color: #fff;">(${data.x}, ${data.y})</b>
+          </div>
+          <div style="font-size: 11px; font-weight: 700; color:${isFound ? '#40bf6a' : '#d18a45'}; margin-bottom: 6px;">
+            ${isFound ? '✓ Marked Found' : '⭕ Unclaimed'}
+          </div>
           <button 
             class="popup-btn ${isFound ? 'btn-unmark' : 'btn-mark'}" 
             onclick="toggleFoundFirebase('${key}')">
@@ -300,7 +421,8 @@
       const mapElement = document.getElementById('map');
 
       btn.textContent = hideFoundActive ? "Show Found" : "Hide Found";
-      btn.style.borderColor = hideFoundActive ? "#58a6ff" : "#30363d";
+      btn.style.borderColor = hideFoundActive ? "#f0bd75" : "rgba(209, 138, 69, 0.3)";
+      btn.style.color = hideFoundActive ? "#f0bd75" : "#9ab0c2";
 
       if (hideFoundActive) {
         mapElement.classList.add('hide-found');
@@ -359,8 +481,8 @@
         const pt = snapshot.val();
         const key = `${pt.x},${pt.y}`;
         if (!registeredCoords.has(key)) {
-          registeredCoords.set(key, { x: pt.x, y: pt.y, label: pt.type, color: '#ffffff' });
-          createPin(pt.x, pt.y, pt.type, '#ffffff');
+          registeredCoords.set(key, { x: pt.x, y: pt.y, label: pt.type, color: '#f0bd75' });
+          createPin(pt.x, pt.y, pt.type, '#f0bd75');
         }
       });
     }
@@ -378,7 +500,7 @@
       const type = document.getElementById('input-type').value;
 
       if (isNaN(x) || isNaN(y)) {
-        showStatus("Please enter both X and Y coordinates.", 'error');
+        showStatus("Enter both X and Y coordinates.", 'error');
         return;
       }
 
@@ -390,7 +512,7 @@
         if (marker) marker.openPopup();
 
         if (globalFoundCoords.has(key)) {
-          showStatus(`Already collected at (${x}, ${y})!`, 'error');
+          showStatus(`Already marked at (${x}, ${y})!`, 'error');
         } else {
           toggleFoundFirebase(key);
         }
