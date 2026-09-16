@@ -1297,13 +1297,14 @@
     }
 
     /* =========================================
-       NAV DROPDOWN (TOOLS) - ALIGNED
+       NAV DROPDOWN (TOOLS) - PERFECT BASELINE FIX
     ========================================= */
     .nav-dropdown {
       position: relative;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      height: 100%;
+      vertical-align: middle;
+      line-height: 1; /* Eliminates rogue parent font spacing */
     }
 
     .nav-dropdown-btn {
@@ -1313,7 +1314,7 @@
       font-family: "Inter", sans-serif;
       font-size: 10px;
       font-weight: 400;
-      line-height: 1;              /* Enforces identical text box height */
+      line-height: 1; /* Matches the 10px line-height of adjacent <a> tags */
       letter-spacing: 3px;
       text-transform: uppercase;
       cursor: pointer;
@@ -1322,7 +1323,7 @@
       gap: 5px;
       padding: 0;
       margin: 0;
-      vertical-align: middle;
+      transform: translateY(1px); /* Nudges the text down to exact subpixel match with <a> */
       transition: color .3s;
     }
 
@@ -1334,13 +1335,13 @@
     .dropdown-arrow {
       font-size: 7px;
       line-height: 1;
-      transform: translateY(-1px); /* Centers small glyph to match uppercase cap-height */
-      transition: transform 0.2s ease;
       opacity: 0.7;
+      transition: transform 0.2s ease;
+      display: inline-block;
     }
 
     .nav-dropdown:hover .dropdown-arrow {
-      transform: translateY(-1px) rotate(180deg);
+      transform: rotate(180deg);
       opacity: 1;
     }
 
