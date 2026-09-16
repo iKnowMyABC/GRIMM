@@ -1308,40 +1308,44 @@
     .nav-dropdown-btn {
       background: transparent;
       border: none;
-      color: inherit;
-      font-family: 'Cinzel', serif; /* Explicitly forces the Nordic font */
-      font-size: inherit;          /* Matches your other nav <a> tags */
-      letter-spacing: inherit;     /* Matches your other nav spacing */
+      color: #aebdca;
+      font-family: "Inter", sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 3px;
+      text-transform: uppercase;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 5px;
       padding: 0;
-      text-transform: inherit;
-      transition: color 0.2s ease;
+      transition: color .3s;
     }
 
-    .nav-dropdown-btn:hover {
-      color: #f0bd75;
+    .nav-dropdown-btn:hover,
+    .nav-dropdown:hover .nav-dropdown-btn {
+      color: white;
     }
 
     .dropdown-arrow {
-      font-size: 9px;
+      font-size: 8px;
       transition: transform 0.2s ease;
+      opacity: 0.7;
     }
 
     .nav-dropdown:hover .dropdown-arrow {
       transform: rotate(180deg);
+      opacity: 1;
     }
 
     .nav-dropdown-content {
       display: none;
       position: absolute;
       top: 100%;
-      right: 0; /* Anchors to the right edge so it won't clip off-screen */
-      min-width: 260px;
-      background: rgba(13, 18, 24, 0.95);
-      border: 1px solid rgba(209, 138, 69, 0.35);
+      right: 0;
+      min-width: 270px;
+      background: rgba(12, 17, 23, 0.95);
+      border: 1px solid rgba(160, 190, 210, 0.25);
       border-radius: 4px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(8px);
@@ -1357,7 +1361,7 @@
     .dropdown-item {
       display: flex;
       flex-direction: column;
-      padding: 10px 16px;
+      padding: 12px 16px;
       text-decoration: none;
       transition: background 0.2s ease;
       border-left: 2px solid transparent;
@@ -1365,25 +1369,27 @@
 
     .dropdown-item:hover {
       background: rgba(209, 138, 69, 0.12);
-      border-left: 2px solid #f0bd75;
+      border-left: 2px solid var(--fire-light);
     }
 
     .dropdown-item-title {
       font-family: 'Cinzel', serif;
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: #f0bd75;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--fire-light);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      text-transform: uppercase;
     }
 
     .dropdown-item-desc {
-      font-size: 11px;
-      color: #7f95a6;
-      margin-top: 3px;
-      font-family: sans-serif;
+      font-size: 10px;
+      color: var(--ice-dim);
+      margin-top: 4px;
+      font-family: 'Inter', sans-serif;
       letter-spacing: 0.5px;
+      text-transform: none;
     }
     
   </style>
@@ -1424,7 +1430,7 @@
             <span class="dropdown-item-title">
               Season 2 - Scattered Supplies Tracker <span>↗</span>
             </span>
-            <span class="dropdown-item-desc">Real-time tracker for Server 2109</span>
+            <span class="dropdown-item-desc">Real-time tracker (Server 2109)</span>
           </a>
         </div>
       </li>
