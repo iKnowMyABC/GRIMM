@@ -34,50 +34,51 @@
 
     #map { width: 100%; height: 100vh; background: #070a0e; }
 
-    /* =========================================
-       MINIMAL TOP-LEFT GRIMM BRAND BADGE
+/* =========================================
+       NAVIGATION BAR & BRAND (MAIN SITE MATCH)
     ========================================= */
-    .brand-hub {
-      position: absolute;
-      top: 18px;
-      left: 20px;
-      z-index: 1000;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      background: rgba(12, 17, 23, 0.85);
-      border: 1px solid rgba(160, 190, 210, 0.25);
-      padding: 8px 16px;
-      border-radius: 4px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-      transition: all 0.25s ease;
-    }
-
-    .brand-hub:hover {
-      border-color: var(--fire-light);
-      background: rgba(18, 26, 36, 0.95);
-      transform: translateY(-2px);
-    }
-
-    .brand-title {
-      font-family: "Cinzel", serif;
-      font-weight: 700;
-      letter-spacing: 4px;
-      font-size: 14px;
-      color: var(--ice);
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 76px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: space-between;
+      padding: 0 6%;
+      z-index: 1000;
+      pointer-events: none; /* Allows clicking the map beneath empty space */
+      background: linear-gradient(
+        to bottom,
+        rgba(4, 7, 10, 0.9),
+        rgba(4, 7, 10, 0)
+      );
     }
 
-    .brand-sub {
+    .nav-brand {
+      pointer-events: auto; /* Re-enables clicking the brand link */
+      font-family: "Cinzel", serif;
+      font-weight: 700;
+      letter-spacing: 5px;
+      font-size: 18px;
+      color: var(--ice);
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-brand:hover {
+      opacity: 0.85;
+    }
+
+    .nav-brand small {
+      display: block;
       font-family: "Inter", sans-serif;
       font-size: 8px;
-      letter-spacing: 2px;
+      letter-spacing: 4px;
       color: var(--ice-dim);
       margin-top: 2px;
-      text-transform: uppercase;
+      text-transform: none;
     }
 
     /* =========================================
@@ -88,7 +89,7 @@
       top: 18px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 1000;
+      z-index: 1001;
       background: rgba(12, 17, 23, 0.85);
       border: 1px solid rgba(160, 190, 210, 0.25);
       border-radius: 6px;
@@ -311,11 +312,13 @@
 </head>
 <body>
 
-  <!-- Minimal Brand Hub Link (Home) -->
-  <a href="../../#home" class="brand-hub" title="Return to Main Portal">
-    <div class="brand-title">← GRIMM <small style="font-size: 9px; color: var(--fire-light);">[ grmm ]</small></div>
-    <div class="brand-sub">SERVER 2109 • PORTAL</div>
-  </a>
+  <!-- NAVIGATION -->
+  <nav>
+    <a href="../../#home" class="nav-brand">
+      GRIMM
+      <small>[ grmm ]</small>
+    </a>
+  </nav>
 
   <!-- Top Action Panel -->
   <div class="top-panel" id="scout-controls">
