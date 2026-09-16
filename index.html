@@ -1297,12 +1297,13 @@
     }
 
     /* =========================================
-       NAV DROPDOWN (TOOLS)
+       NAV DROPDOWN (TOOLS) - ALIGNED
     ========================================= */
     .nav-dropdown {
       position: relative;
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      height: 100%;
     }
 
     .nav-dropdown-btn {
@@ -1312,6 +1313,7 @@
       font-family: "Inter", sans-serif;
       font-size: 10px;
       font-weight: 400;
+      line-height: 1;              /* Enforces identical text box height */
       letter-spacing: 3px;
       text-transform: uppercase;
       cursor: pointer;
@@ -1319,6 +1321,8 @@
       align-items: center;
       gap: 5px;
       padding: 0;
+      margin: 0;
+      vertical-align: middle;
       transition: color .3s;
     }
 
@@ -1328,20 +1332,22 @@
     }
 
     .dropdown-arrow {
-      font-size: 8px;
+      font-size: 7px;
+      line-height: 1;
+      transform: translateY(-1px); /* Centers small glyph to match uppercase cap-height */
       transition: transform 0.2s ease;
       opacity: 0.7;
     }
 
     .nav-dropdown:hover .dropdown-arrow {
-      transform: rotate(180deg);
+      transform: translateY(-1px) rotate(180deg);
       opacity: 1;
     }
 
     .nav-dropdown-content {
       display: none;
       position: absolute;
-      top: 100%;
+      top: calc(100% + 14px);      /* Offsets cleanly below the 76px nav height */
       right: 0;
       min-width: 270px;
       background: rgba(12, 17, 23, 0.95);
@@ -1352,6 +1358,16 @@
       z-index: 1000;
       padding: 6px 0;
       text-align: left;
+    }
+
+    /* Invisible bridge prevents menu from disappearing on cursor travel */
+    .nav-dropdown-content::before {
+      content: "";
+      position: absolute;
+      top: -16px;
+      left: 0;
+      right: 0;
+      height: 16px;
     }
 
     .nav-dropdown:hover .nav-dropdown-content {
