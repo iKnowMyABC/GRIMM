@@ -1309,7 +1309,9 @@
       background: transparent;
       border: none;
       color: inherit;
-      font: inherit;
+      font-family: 'Cinzel', serif; /* Explicitly forces the Nordic font */
+      font-size: inherit;          /* Matches your other nav <a> tags */
+      letter-spacing: inherit;     /* Matches your other nav spacing */
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -1410,6 +1412,7 @@
       <li><a href="#schedule">Events</a></li>
       <li><a href="#songs">Songs</a></li>
       <li><a href="#chant">Chant</a></li>
+      <li><a href="#discord">Discord</a></li>
 
       <!-- TOOLS DROPDOWN -->
       <li class="nav-dropdown">
@@ -1419,14 +1422,13 @@
         <div class="nav-dropdown-content">
           <a href="tools/season2-supplies/" target="_blank" rel="noopener noreferrer" class="dropdown-item">
             <span class="dropdown-item-title">
-              Season 2 - Scattered Supplies <span>↗</span>
+              Season 2 - Scattered Supplies Tracker <span>↗</span>
             </span>
-            <span class="dropdown-item-desc">Real-time supply map tracker</span>
+            <span class="dropdown-item-desc">Real-time tracker for Server 2109</span>
           </a>
         </div>
       </li>
-
-      <li><a href="#discord">Discord</a></li>
+      
     </ul>
   </nav>
 
