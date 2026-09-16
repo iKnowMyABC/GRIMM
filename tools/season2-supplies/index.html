@@ -78,7 +78,33 @@
       letter-spacing: 4px;
       color: var(--ice-dim);
       margin-top: 2px;
-      text-transform: none;
+      text-transform: uppercase; /* Matches main index */
+    }
+
+    .nav-tool-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-tool-divider {
+      color: rgba(160, 190, 210, 0.3);
+      font-size: 14px;
+      margin: 0 4px;
+      font-weight: 300;
+    }
+
+    .tool-badge {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--fire-light);
+      text-transform: uppercase;
+      background: rgba(209, 138, 69, 0.12);
+      border: 1px solid rgba(209, 138, 69, 0.35);
+      padding: 4px 10px;
+      border-radius: 3px;
+      white-space: nowrap;
     }
 
     /* =========================================
@@ -314,10 +340,14 @@
 
   <!-- NAVIGATION -->
   <nav>
-    <a href="../../#home" class="nav-brand">
-      GRIMM
-      <small>[ grmm ]</small>
-    </a>
+    <div class="nav-tool-indicator">
+      <a href="../../#home" class="nav-brand">
+        GRIMM
+        <small>[ grmm ]</small>
+      </a>
+      <span class="nav-tool-divider">/</span>
+      <span class="tool-badge">Season 2 — Supplies Tracker</span>
+    </div>
   </nav>
 
   <!-- Top Action Panel -->
