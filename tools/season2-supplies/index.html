@@ -26,13 +26,19 @@
     
     body, html {
       height: 100%;
+      height: 100dvh; /* Modern dynamic viewport height */
       background: var(--dark);
       font-family: 'Inter', sans-serif;
       color: var(--white);
       overflow: hidden;
     }
 
-    #map { width: 100%; height: 100vh; background: #070a0e; }
+    #map { 
+      width: 100%; 
+      height: 100%; 
+      height: 100dvh; 
+      background: #070a0e; 
+    }
 
     /* =========================================
        TOP BRAND & TOOL HEADER
@@ -416,18 +422,33 @@
         padding: 4px 8px;
       }
 
+      /* Lift Zoom Controls above mobile system navigation */
+      .leaflet-bottom.leaflet-left {
+        margin-left: 14px;
+        margin-bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+        z-index: 999;
+      }
+
+      /* Lift Coordinates above mobile system navigation */
       .hud-coords {
-        bottom: 12px;
         right: 12px;
+        bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
         font-size: 10px;
         padding: 4px 10px;
       }
 
+      /* Toast Notification: Centered at the bottom, above system bar */
       #status-msg {
-        top: 130px;
-        width: 90%;
+        top: auto !important;
+        bottom: calc(75px + env(safe-area-inset-bottom, 0px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 85%;
+        max-width: 340px;
         text-align: center;
-        font-size: 10px;
+        font-size: 11px;
+        padding: 8px 14px;
+        z-index: 2000;
       }
     }
 
