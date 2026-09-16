@@ -1139,9 +1139,106 @@
         padding: 0 5%;
       }
 
-      nav ul {
-        display: none;
+    /* =========================================
+       MOBILE NAVIGATION SYSTEM
+    ========================================= */
+    #mobile-nav-toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid rgba(160, 190, 210, 0.25);
+      border-radius: 4px;
+      padding: 8px 10px;
+      cursor: pointer;
+      z-index: 10001;
+      flex-direction: column;
+      gap: 5px;
+      justify-content: center;
+      align-items: center;
+      background: rgba(12, 17, 23, 0.6);
+      backdrop-filter: blur(6px);
+    }
+
+    #mobile-nav-toggle span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--ice);
+      transition: all 0.3s ease;
+    }
+
+    @media (max-width: 800px) {
+      nav {
+        padding: 0 5%;
+        height: 64px;
       }
+
+      #mobile-nav-toggle {
+        display: flex; /* Shows hamburger on mobile */
+      }
+
+      /* Sliding Nordic Drawer */
+      nav ul#nav-menu {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 310px;
+        height: 100vh;
+        background: rgba(7, 10, 14, 0.98);
+        border-left: 1px solid rgba(209, 138, 69, 0.35);
+        box-shadow: -15px 0 35px rgba(0, 0, 0, 0.95);
+        padding: 85px 28px 40px;
+        gap: 22px;
+        transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10000;
+        overflow-y: auto;
+        backdrop-filter: blur(14px);
+      }
+
+      nav ul#nav-menu.nav-open {
+        right: 0 !important; /* Slides into view */
+      }
+
+      nav ul#nav-menu a,
+      nav ul#nav-menu .nav-dropdown-btn {
+        font-size: 13px !important;
+        letter-spacing: 3px !important;
+      }
+
+      .nav-dropdown {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .nav-dropdown-content {
+        position: static !important;
+        display: none;
+        width: 100%;
+        margin-top: 10px;
+        background: rgba(16, 23, 32, 0.9);
+        border: 1px solid rgba(209, 138, 69, 0.35);
+        box-shadow: none;
+      }
+
+      .nav-dropdown.mobile-expanded .nav-dropdown-content {
+        display: block !important;
+      }
+
+      /* Animated 'X' when open */
+      #mobile-nav-toggle.open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      #mobile-nav-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+      #mobile-nav-toggle.open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+    }
 
       .hero h1 {
         letter-spacing: 7px;
@@ -1428,8 +1525,8 @@
       <small>[ grmm ]</small>
     </a>
 
-    <!-- MOBILE HAMBURGER BUTTON -->
-    <button id="mobile-nav-toggle" aria-label="Open Navigation">
+    <!-- HAMBURGER BUTTON FOR MOBILE -->
+    <button id="mobile-nav-toggle" type="button" aria-label="Toggle navigation">
       <span></span>
       <span></span>
       <span></span>
@@ -1440,7 +1537,7 @@
       <li><a href="#hall">Hall</a></li>
       <li><a href="#alliance">Alliance</a></li>
       <li><a href="#schedule">Events</a></li>
-      <li><a href="#songs">Songs</a></li>
+      <li><a href="#song">Songs</a></li>
       <li><a href="#chant">Chant</a></li>
       <li><a href="#discord">Discord</a></li>
 
@@ -2507,6 +2604,50 @@
         updateLiveServerReset();
       }, 1000);
     });
+
+    // --------------------------------------------------
+    // MOBILE NAVIGATION DRAWER CONTROLLER
+    // --------------------------------------------------
+    const navBtn = document.getElementById("mobile-nav-toggle");
+    const navList = document.getElementById("nav-menu");
+    const dropdownLi = document.querySelector(".nav-dropdown");
+
+    if (navBtn && navList) {
+      navBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        navBtn.classList.toggle("open");
+        navList.classList.toggle("nav-open");
+      });
+
+      // Tap on 'Tools' expands the sub-links on mobile
+      if (dropdownLi) {
+        const dropBtn = dropdownLi.querySelector(".nav-dropdown-btn");
+        dropBtn.addEventListener("click", (e) => {
+          if (window.innerWidth <= 800) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdownLi.classList.toggle("mobile-expanded");
+          }
+        });
+      }
+
+      // Close menu when tapping any regular anchor link
+      document.querySelectorAll("#nav-menu a:not(.dropdown-item)").forEach(link => {
+        link.addEventListener("click", () => {
+          navBtn.classList.remove("open");
+          navList.classList.remove("nav-open");
+        });
+      });
+
+      // Close menu when tapping anywhere outside the drawer
+      document.addEventListener("click", (e) => {
+        if (!navList.contains(e.target) && !navBtn.contains(e.target)) {
+          navBtn.classList.remove("open");
+          navList.classList.remove("nav-open");
+        }
+      });
+    }
+    
   </script>
   
 </body>
