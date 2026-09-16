@@ -437,6 +437,44 @@
         display: none;
       }
     }
+    
+    /* =========================================
+       CUSTOM BOTTOM-LEFT ZOOM CONTROLS
+    ========================================= */
+    .leaflet-bottom.leaflet-left {
+      margin-bottom: 16px;
+      margin-left: 16px;
+      z-index: 999;
+    }
+
+    .leaflet-bar {
+      border: 1px solid rgba(160, 190, 210, 0.25) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8) !important;
+      border-radius: 4px !important;
+      overflow: hidden;
+    }
+
+    .leaflet-bar a {
+      background: rgba(12, 17, 23, 0.9) !important;
+      color: var(--ice) !important;
+      border-bottom: 1px solid rgba(160, 190, 210, 0.15) !important;
+      width: 32px !important;
+      height: 32px !important;
+      line-height: 32px !important;
+      font-size: 16px !important;
+      transition: all 0.2s ease !important;
+      backdrop-filter: blur(8px);
+    }
+
+    .leaflet-bar a:hover {
+      background: rgba(20, 28, 38, 0.95) !important;
+      color: var(--fire-light) !important;
+    }
+
+    .leaflet-bar a:last-child {
+      border-bottom: none !important;
+    }
+    
   </style>
 </head>
 <body>
@@ -493,7 +531,7 @@
 
   <script>
     const FIREBASE_DB_URL = "https://season-2-supplies-default-rtdb.europe-west1.firebasedatabase.app/";
-    const SCOUT_PASSKEY = "GRIMM_SCOUT_2109"; // Set your alliance scout passphrase here
+    const SCOUT_PASSKEY = "SCOUT_HONOR"; // Set your alliance scout passphrase here
 
     firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
     const db = firebase.database();
@@ -558,8 +596,12 @@
       maxZoom: 3,
       zoomSnap: 0.25,
       zoomDelta: 0.5,
+      zoomControl: false,       // Disables default top-left control
       attributionControl: false
     });
+
+    // Mounts zoom buttons cleanly in the bottom-left corner
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
     const bounds = [[0, 0], [MAP_LIMIT, MAP_LIMIT]];
     L.imageOverlay('season-2-grid.png', bounds).addTo(map);
