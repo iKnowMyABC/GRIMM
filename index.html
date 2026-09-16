@@ -1202,25 +1202,45 @@
         right: 0 !important; /* Slides into view */
       }
 
-      nav ul#nav-menu a,
-      nav ul#nav-menu .nav-dropdown-btn {
+      nav ul#nav-menu a {
         font-size: 13px !important;
         letter-spacing: 3px !important;
       }
 
-      .nav-dropdown {
-        flex-direction: column;
-        align-items: flex-start;
+      /* Force the Tools container to match standard <li> layout */
+      nav ul#nav-menu li.nav-dropdown {
         width: 100%;
+        display: block;
+        margin: 0;
+        padding: 0;
+        transform: none;
+      }
+
+      /* Force the Tools button to match the exact font and indent of standard <a> links */
+      nav ul#nav-menu .nav-dropdown-btn {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+        font-family: inherit;
+        font-size: 13px !important;
+        letter-spacing: 3px !important;
+        text-transform: uppercase;
+        color: #aebdca;
+        transform: none;
+        text-align: left;
       }
 
       .nav-dropdown-content {
         position: static !important;
         display: none;
         width: 100%;
-        margin-top: 10px;
+        margin-top: 12px;
         background: rgba(16, 23, 32, 0.9);
         border: 1px solid rgba(209, 138, 69, 0.35);
+        border-radius: 4px;
         box-shadow: none;
       }
 
