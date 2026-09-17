@@ -718,17 +718,36 @@
 
       const isFound = globalFoundCoords.has(key);
       const safeKey = key.replace(',', '_');
+      const now = Date.now();
 
       if (isFound) {
-        // Remove the mark
+        // 1. Remove active mark from map
         db.ref(`found_supplies/${safeKey}`).remove();
+
+        // 2. Append unmark event to permanent log
+        db.ref('activity_log').push({
+          action: 'unmarked',
+          coord: key,
+          by: currentScoutName,
+          timestamp: now
+        });
+
         showStatus(`Unmarked: (${key})`, 'info');
       } else {
-        // Save the mark with the active scout's name and time
+        // 1. Add active mark to map
         db.ref(`found_supplies/${safeKey}`).set({
-          timestamp: Date.now(),
+          timestamp: now,
           by: currentScoutName
         });
+
+        // 2. Append mark event to permanent log
+        db.ref('activity_log').push({
+          action: 'marked',
+          coord: key,
+          by: currentScoutName,
+          timestamp: now
+        });
+
         showStatus(`Marked by Scout ${currentScoutName}!`, 'success');
       }
     };
