@@ -593,16 +593,6 @@
       });
     }
 
-    // 2. Restore saved scout session or default to guest
-    const savedToken = localStorage.getItem("grimm_scout_auth");
-    let isScout = false;
-    let currentScoutName = null;
-
-    if (savedToken && AUTHORIZED_SCOUTS[savedToken]) {
-      isScout = true;
-      currentScoutName = AUTHORIZED_SCOUTS[savedToken];
-    }
-
     // --------------------------------------------------
     // SCOUT AUTHENTICATION
     // --------------------------------------------------
