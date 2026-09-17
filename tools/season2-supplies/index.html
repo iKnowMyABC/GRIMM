@@ -561,7 +561,6 @@
 
   <script>
     const FIREBASE_DB_URL = "https://season-2-supplies-default-rtdb.europe-west1.firebasedatabase.app/";
-    const SCOUT_PASSKEY = "SCOUT_HONOR"; // Set your alliance scout passphrase here
 
     firebase.initializeApp({ databaseURL: FIREBASE_DB_URL });
     const db = firebase.database();
@@ -570,18 +569,49 @@
     const registeredCoords = new Map();
     const markerInstances = new Map();
     const globalFoundCoords = new Set();
+    const foundScoutDetails = new Map();
     let hideFoundActive = false;
-    let isScout = localStorage.getItem("grimm_scout_auth") === "true";
+
+    // Session restoration variables
+    let isScout = false;
+    let currentScoutName = localStorage.getItem("grimm_scout_name") || null;
+    const savedToken = localStorage.getItem("grimm_scout_auth");
+
+    // Check saved passcode against Firebase in the background
+    if (savedToken) {
+      db.ref(`scout_keys/${savedToken}`).once('value').then(snapshot => {
+        if (snapshot.exists()) {
+          isScout = true;
+          currentScoutName = snapshot.val();
+          localStorage.setItem("grimm_scout_name", currentScoutName);
+          updateScoutUI();
+        } else {
+          logoutScout();
+        }
+      }).catch(() => {
+        logoutScout();
+      });
+    }
+
+    // 2. Restore saved scout session or default to guest
+    const savedToken = localStorage.getItem("grimm_scout_auth");
+    let isScout = false;
+    let currentScoutName = null;
+
+    if (savedToken && AUTHORIZED_SCOUTS[savedToken]) {
+      isScout = true;
+      currentScoutName = AUTHORIZED_SCOUTS[savedToken];
+    }
 
     // --------------------------------------------------
     // SCOUT AUTHENTICATION
     // --------------------------------------------------
     function updateScoutUI() {
       const authBtn = document.getElementById("auth-scout-btn");
-      if (isScout) {
+      if (isScout && currentScoutName) {
         document.body.classList.remove("viewer-mode");
         if (authBtn) {
-          authBtn.innerHTML = "🔓 Scout: Active";
+          authBtn.innerHTML = `🔓 Scout: ${currentScoutName}`;
           authBtn.style.color = "#40bf6a";
           authBtn.style.borderColor = "#40bf6a";
         }
@@ -595,25 +625,51 @@
       }
     }
 
+    function logoutScout() {
+      isScout = false;
+      currentScoutName = null;
+      localStorage.removeItem("grimm_scout_auth");
+      localStorage.removeItem("grimm_scout_name");
+      updateScoutUI();
+    }
+
     window.toggleScoutAuth = function() {
       if (isScout) {
         if (confirm("Lock map back to spectator/view-only mode?")) {
-          isScout = false;
-          localStorage.removeItem("grimm_scout_auth");
-          updateScoutUI();
+          logoutScout();
           showStatus("Switched to Spectator Mode.", "info");
         }
         return;
       }
 
       const input = prompt("ᚦ ENTER ALLIANCE SCOUT PASSPHRASE:");
-      if (input === SCOUT_PASSKEY) {
-        isScout = true;
-        localStorage.setItem("grimm_scout_auth", "true");
-        updateScoutUI();
-        showStatus("Scout permissions verified!", "success");
-      } else if (input !== null) {
-        showStatus("Invalid passphrase.", "error");
+      if (input !== null) {
+        // Strip out forbidden Firebase key characters
+        const cleanCode = input.trim().replace(/[.#$\[\]]/g, '');
+
+        if (!cleanCode) {
+          showStatus("Invalid passphrase format.", "error");
+          return;
+        }
+
+        showStatus("Verifying scout credentials...", "info");
+
+        // Look up this single key in Firebase
+        db.ref(`scout_keys/${cleanCode}`).once('value').then(snapshot => {
+          if (snapshot.exists()) {
+            isScout = true;
+            currentScoutName = snapshot.val();
+            localStorage.setItem("grimm_scout_auth", cleanCode);
+            localStorage.setItem("grimm_scout_name", currentScoutName);
+            updateScoutUI();
+            showStatus(`Verified: Welcome Scout ${currentScoutName}!`, "success");
+          } else {
+            showStatus("Invalid passphrase.", "error");
+          }
+        }).catch(err => {
+          console.error(err);
+          showStatus("Authentication failed.", "error");
+        });
       }
     };
 
@@ -665,8 +721,8 @@
     }
 
     window.toggleFoundFirebase = function(key) {
-      if (!isScout) {
-        showStatus("Only authorized scouts can modify spots.", "error");
+      if (!isScout || !currentScoutName) {
+        showStatus("Unauthorized. Scout passphrase required.", "error");
         return;
       }
 
@@ -674,13 +730,16 @@
       const safeKey = key.replace(',', '_');
 
       if (isFound) {
+        // Remove the mark
         db.ref(`found_supplies/${safeKey}`).remove();
-        showStatus(`Unmarked (${key.replace('_', ',')})`, 'info');
+        showStatus(`Unmarked: (${key})`, 'info');
       } else {
+        // Save the mark with the active scout's name and time
         db.ref(`found_supplies/${safeKey}`).set({
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          by: currentScoutName
         });
-        showStatus(`Marked found for everyone!`, 'success');
+        showStatus(`Marked by Scout ${currentScoutName}!`, 'success');
       }
     };
 
@@ -749,22 +808,34 @@
     };
 
     function listenToFoundSupplies() {
-      db.ref('found_supplies').on('value', (snapshot) => {
-        globalFoundCoords.clear();
-        const data = snapshot.val();
-        if (data) {
-          Object.keys(data).forEach(safeKey => {
-            const key = safeKey.replace('_', ',');
-            globalFoundCoords.add(key);
-          });
-        }
+  db.ref('found_supplies').on('value', (snapshot) => {
+    globalFoundCoords.clear();
+    foundScoutDetails.clear();
 
-        markerInstances.forEach((marker, key) => {
-          const itemData = registeredCoords.get(key);
-          if (itemData) updateMarkerVisual(marker, key, itemData);
-        });
+    const data = snapshot.val();
+    if (data) {
+      Object.entries(data).forEach(([safeKey, val]) => {
+        const key = safeKey.replace('_', ',');
+        globalFoundCoords.add(key);
+
+        // Store the scout name, or fallback if older entry without a name
+        const scout = (val && typeof val === 'object' && val.by) ? val.by : 'Unknown Scout';
+        foundScoutDetails.set(key, scout);
       });
     }
+
+    markerInstances.forEach((marker, key) => {
+      const itemData = registeredCoords.get(key);
+      if (itemData) {
+        updateMarkerVisual(marker, key, itemData);
+        // If your code has a popup updater function, call it here:
+        if (typeof updateMarkerPopup === 'function') {
+          updateMarkerPopup(marker, key, itemData);
+        }
+      }
+    });
+  });
+}
 
     async function loadStaticData() {
       try {
