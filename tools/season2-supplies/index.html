@@ -504,6 +504,27 @@
     .leaflet-bar a:last-child {
       border-bottom: none !important;
     }
+
+    /* Counter Dropdown */
+    .counter-dropdown:hover #counter-dropdown-menu {
+      display: block !important;
+    }
+    .counter-dropdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      padding: 2px 0;
+    }
+    .counter-dropdown-row .tier-name {
+      color: #9ab0c2;
+    }
+    .counter-dropdown-row .tier-nums {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--fire-light);
+      font-weight: 600;
+    }
     
   </style>
 </head>
@@ -546,8 +567,9 @@
     <button class="btn-action" onclick="submitCoordinate()">Submit / Mark</button>
     <button class="btn-secondary" id="toggle-found-btn" onclick="toggleHideFound()">Hide Found</button>
 
-    <!-- REMAINING SUPPLIES COUNTER -->
-    <div id="supplies-counter-badge" style="
+    <!-- REMAINING SUPPLIES COUNTER & LEVEL BREAKDOWN DROPDOWN -->
+    <div class="counter-dropdown" id="supplies-counter-badge" style="
+      position: relative;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -559,9 +581,36 @@
       font-size: 11px;
       letter-spacing: 1px;
       white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
     ">
       <span style="color: var(--ice-dim);">REMAINING:</span>
       <b id="remaining-count" style="color: var(--fire-light); font-family: 'JetBrains Mono', monospace; font-size: 13px;">--</b>
+      <span style="font-size: 8px; color: var(--ice-dim); margin-left: 2px;">▼</span>
+
+      <!-- Dropdown Menu -->
+      <div id="counter-dropdown-menu" style="
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        min-width: 175px;
+        background: rgba(12, 17, 23, 0.96);
+        border: 1px solid rgba(160, 190, 210, 0.25);
+        border-radius: 4px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        padding: 8px 12px;
+        cursor: default;
+      ">
+        <div style="font-size: 9px; letter-spacing: 2px; color: var(--ice-dim); border-bottom: 1px solid rgba(160,190,210,0.15); padding-bottom: 5px; margin-bottom: 6px; text-transform: uppercase;">
+          Breakdown by Tier
+        </div>
+        <div id="counter-levels-list" style="display: flex; flex-direction: column; gap: 5px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
     </div>
 
     <!-- SINGLE AUTH BUTTON -->
@@ -963,9 +1012,54 @@
       const found = globalFoundCoords.size;
       const remaining = Math.max(0, total - found);
 
+      // 1. Update primary badge
       const counterEl = document.getElementById("remaining-count");
       if (counterEl) {
         counterEl.textContent = `${remaining} / ${total}`;
+      }
+
+      // 2. Calculate tier-by-tier breakdown
+      const breakdown = {};
+
+      registeredCoords.forEach((item, key) => {
+        let tier = item.level || item.label || "Custom Spot";
+        // Standardize labels like "Level 1", "Lvl 1", or numeric 1
+        if (typeof tier === 'number' || (!isNaN(tier) && !String(tier).toLowerCase().includes("level"))) {
+          tier = `Level ${tier}`;
+        }
+
+        if (!breakdown[tier]) {
+          breakdown[tier] = { total: 0, found: 0 };
+        }
+
+        breakdown[tier].total++;
+        if (globalFoundCoords.has(key)) {
+          breakdown[tier].found++;
+        }
+      });
+
+      // 3. Render dropdown list
+      const listEl = document.getElementById("counter-levels-list");
+      if (listEl) {
+        listEl.innerHTML = "";
+
+        // Sort levels naturally (Level 1, Level 2 ... then Custom)
+        const sortedTiers = Object.keys(breakdown).sort((a, b) => {
+          return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        sortedTiers.forEach(tier => {
+          const stats = breakdown[tier];
+          const rem = stats.total - stats.found;
+
+          const row = document.createElement("div");
+          row.className = "counter-dropdown-row";
+          row.innerHTML = `
+            <span class="tier-name">${tier}</span>
+            <span class="tier-nums">${rem} <span style="color:#536b7b;font-size:10px;">/ ${stats.total}</span></span>
+          `;
+          listEl.appendChild(row);
+        });
       }
     }
     
