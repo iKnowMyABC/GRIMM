@@ -545,6 +545,25 @@
 
     <button class="btn-action" onclick="submitCoordinate()">Submit / Mark</button>
     <button class="btn-secondary" id="toggle-found-btn" onclick="toggleHideFound()">Hide Found</button>
+    <!-- REMAINING SUPPLIES COUNTER BADGE -->
+    <div id="supplies-counter-badge" style="
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #090d12;
+      border: 1px solid rgba(160, 190, 210, 0.25);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    ">
+      <span style="color: var(--ice-dim);">REMAINING:</span>
+      <b id="remaining-count" style="color: var(--fire-light); font-family: 'JetBrains Mono', monospace; font-size: 13px;">--</b>
+    </div>
+
+    <button class="btn-secondary" id="auth-scout-btn" onclick="toggleScoutAuth()" ...>
     <button class="btn-secondary" id="auth-scout-btn" onclick="toggleScoutAuth()" style="border-color: rgba(209, 138, 69, 0.5); color: var(--fire-light);">
       🔒 Scout Login
     </button>
@@ -842,6 +861,8 @@
           updateMarkerPopup(marker, key, itemData);
         }
       }
+      // UPDATE COUNTER HERE:
+        updateSuppliesCounter();
     });
   });
 }
@@ -867,6 +888,9 @@
             });
           });
         }
+        // UPDATE COUNTER HERE:
+        updateSuppliesCounter();
+        
       } catch (err) {
         console.error("Error reading data.json:", err);
       }
@@ -932,6 +956,18 @@
       map.flyTo([y, x], 1.6);
       showStatus(`Saved new spot at (${x}, ${y})!`, 'success');
     }
+
+    function updateSuppliesCounter() {
+      const total = registeredCoords.size;
+      const found = globalFoundCoords.size;
+      const remaining = Math.max(0, total - found);
+
+      const counterEl = document.getElementById("remaining-count");
+      if (counterEl) {
+        counterEl.textContent = `${remaining} / ${total}`;
+      }
+    }
+    
   </script>
 </body>
 </html>
