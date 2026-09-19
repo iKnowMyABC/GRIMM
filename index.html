@@ -836,24 +836,17 @@
     }
 
     /* =========================================
-       FOUNDER MEMBER CARD (GLACIAL CORE)
+       FOUNDER MEMBER CARD (SUBTLE GLACIAL BORDER + PILL ONLY)
     ========================================= */
     .members-grid div.founder-member-card {
       position: relative;
-      border: 1px solid rgba(120, 180, 232, 0.55) !important;
-      background: linear-gradient(
-        135deg,
-        rgba(120, 180, 232, 0.12) 0%,
-        rgba(12, 17, 23, 0.9) 100%
-      ) !important;
-      color: #eaf5ff !important;
-      font-family: "Cinzel", serif;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-shadow: 0 0 8px rgba(220, 236, 255, 0.45);
-      box-shadow: 
-        inset 0 0 12px rgba(120, 180, 232, 0.15),
-        0 0 14px rgba(120, 180, 232, 0.18);
+      border: 1px solid rgba(120, 180, 232, 0.7) !important;
+      background: rgba(12, 17, 23, 0.6) !important; /* Standard member card background */
+      color: inherit !important;                     /* Same text color as standard members */
+      font-family: inherit !important;               /* Same font family as standard members */
+      font-weight: inherit !important;               /* Same normal font weight */
+      text-shadow: none !important;                  /* No text glow */
+      box-shadow: 0 0 10px rgba(120, 180, 232, 0.15) !important; /* Crisp outer edge only */
       z-index: 2;
     }
 
@@ -884,15 +877,9 @@
     /* Hover State */
     .members-grid div.founder-member-card:hover {
       border-color: rgba(220, 236, 255, 0.85) !important;
-      background: linear-gradient(
-        135deg,
-        rgba(120, 180, 232, 0.22) 0%,
-        rgba(16, 24, 34, 0.95) 100%
-      ) !important;
+      background: rgba(17, 24, 34, 0.85) !important;
       transform: translateY(-2px);
-      box-shadow: 
-        inset 0 0 16px rgba(120, 180, 232, 0.25),
-        0 0 20px rgba(120, 180, 232, 0.35);
+      box-shadow: 0 0 14px rgba(120, 180, 232, 0.25) !important;
     }
 
     /* =========================================
