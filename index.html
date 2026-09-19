@@ -836,17 +836,13 @@
     }
 
     /* =========================================
-       FOUNDER MEMBER CARD (SUBTLE GLACIAL BORDER + PILL ONLY)
+       FOUNDER MEMBER CARD (NORMAL MEMBER + GLACIAL BORDER & PILL)
     ========================================= */
+    
     .members-grid div.founder-member-card {
       position: relative;
       border: 1px solid rgba(120, 180, 232, 0.7) !important;
-      background: rgba(12, 17, 23, 0.6) !important; /* Standard member card background */
-      color: inherit !important;                     /* Same text color as standard members */
-      font-family: inherit !important;               /* Same font family as standard members */
-      font-weight: inherit !important;               /* Same normal font weight */
-      text-shadow: none !important;                  /* No text glow */
-      box-shadow: 0 0 10px rgba(120, 180, 232, 0.15) !important; /* Crisp outer edge only */
+      box-shadow: 0 0 10px rgba(120, 180, 232, 0.15) !important;
       z-index: 2;
     }
 
@@ -874,12 +870,10 @@
       z-index: 3;
     }
 
-    /* Hover State */
+    /* Hover State: Only highlights border & shadow */
     .members-grid div.founder-member-card:hover {
       border-color: rgba(220, 236, 255, 0.85) !important;
-      background: rgba(17, 24, 34, 0.85) !important;
-      transform: translateY(-2px);
-      box-shadow: 0 0 14px rgba(120, 180, 232, 0.25) !important;
+      box-shadow: 0 0 14px rgba(120, 180, 232, 0.3) !important;
     }
 
     /* =========================================
