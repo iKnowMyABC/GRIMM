@@ -11,28 +11,26 @@
 
   <style>
     :root {
-      --ice: #dcecff;
-      --ice-dim: #8ea9c2;
-      --steel: #607487;
-      --dark: #070a0e;
-      --fire: #d18a45;
-      --fire-light: #f0bd75;
-      --white: #f4f7fa;
+  --ice: #dcecff;
+  --ice-dim: #8ea9c2;
+  --steel: #607487;
+  --dark: #070a0e;
+  --fire: #d18a45;
+  --fire-light: #f0bd75;
+  --white: #f4f7fa;
 
-      --card-bg: rgba(12, 17, 23, 0.9);
-      --card-subtle: rgba(17, 24, 34, 0.95);
-      --frost-border: rgba(160, 190, 210, 0.22);
-      --frost-bright: #78b4e8;
-      --frost-glow: rgba(120, 180, 232, 0.25);
-      --steel-muted: #9ab0c2;
-      --steel-dim: #5a6e7f;
+  --card-bg: rgba(12, 17, 23, 0.9);
+  --card-subtle: rgba(17, 24, 34, 0.95);
+  --frost-border: rgba(160, 190, 210, 0.22);
+  --frost-bright: #78b4e8;
+  --frost-glow: rgba(120, 180, 232, 0.25);
+  --steel-muted: #9ab0c2;
+  --steel-dim: #5a6e7f;
 
-      --conductor-crimson: #c0392b;
-      --conductor-bright: #e74c3c;
-      --vip-gold: #f39c12;
-      --vip-gold-light: #f1c40f;
-      --success-green: #2ecc71;
-    }
+  --conductor-crimson: #c0392b;
+  --conductor-bright: #e74c3c;
+  --success-green: #2ecc71;
+}
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -166,10 +164,11 @@
       flex-wrap: wrap;
     }
 
+    /* Login / Auth Button */
     .btn-auth-toggle {
-      background: rgba(209, 138, 69, 0.15);
-      border: 1px solid var(--fire);
-      color: #ffd4a8;
+      background: rgba(209, 138, 69, 0.12);
+      border: 1px solid rgba(209, 138, 69, 0.5);
+      color: var(--fire-light);
       font-family: 'Cinzel', serif;
       font-size: 10px;
       font-weight: 700;
@@ -186,7 +185,8 @@
 
     .btn-auth-toggle:hover {
       background: rgba(209, 138, 69, 0.3);
-      box-shadow: 0 0 10px rgba(209, 138, 69, 0.4);
+      color: #fff;
+      border-color: var(--fire-light);
     }
 
     /* R4/5 ACCESS CONTROLS */
@@ -1296,7 +1296,7 @@
         authBtn.innerText = "ᛟ R4/5 LOGIN ᛟ";
         authBtn.style.background = "rgba(209, 138, 69, 0.15)";
         authBtn.style.borderColor = "var(--fire)";
-        authBtn.style.color = "#ffd4a8";
+        authBtn.style.color = "var(--fire-light)";
         badge.innerText = "VIEW ONLY";
         badge.style.color = "var(--steel-dim)";
         badge.style.borderColor = "rgba(160, 190, 210, 0.2)";
