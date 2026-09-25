@@ -49,9 +49,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* =========================================
-       TOP BRAND & TOOL HEADER (SCATTERED SUPPLIES MATCH)
-    ========================================= */
+    /* TOP BRAND & TOOL HEADER (SCATTERED SUPPLIES MATCH) */
     nav {
       width: 100%;
       height: 76px;
@@ -148,15 +146,7 @@
       font-weight: 800;
       letter-spacing: 1.5px;
       color: var(--white);
-      margin-bottom: 4px;
       line-height: 1.2;
-    }
-
-    .header-titles p {
-      font-size: 10px;
-      color: var(--steel-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
     }
 
     .header-controls {
@@ -197,6 +187,13 @@
 
     body.r45-mode .r45-only { display: flex !important; }
     body.r45-mode .r45-only-block { display: block !important; }
+
+    /* VIEW ONLY vs R4/5 TOGGLE FOR EDITABLE SLOTS */
+    .view-only-pill { display: inline-flex; }
+    .r45-select { display: none; }
+
+    body.r45-mode .view-only-pill { display: none !important; }
+    body.r45-mode .r45-select { display: inline-block !important; }
 
     .guest-badge {
       font-family: 'Cinzel', serif;
@@ -470,7 +467,6 @@
       color: var(--conductor-bright);
     }
 
-    /* RESTORED VIBRANT VIP GOLD */
     .slot-display.vip-slot {
       background: rgba(243, 156, 18, 0.15);
       border: 1px solid var(--vip-gold);
@@ -495,14 +491,6 @@
 
     .editable-select:focus {
       border-color: var(--frost-bright);
-    }
-
-    .editable-select:disabled {
-      background: rgba(12, 17, 23, 0.5);
-      border-color: rgba(160, 190, 210, 0.15);
-      color: var(--white);
-      cursor: default;
-      opacity: 0.9;
     }
 
     /* EXPORT STRIP (R4/5 ONLY) */
@@ -716,9 +704,7 @@
       align-items: center;
     }
 
-    /* =========================================
-       MOBILE RESPONSIVENESS
-    ========================================= */
+    /* MOBILE RESPONSIVENESS */
     @media (max-width: 768px) {
       nav {
         height: 54px;
@@ -890,7 +876,7 @@
         <small>[ grmm ]</small>
       </a>
       <span class="nav-tool-divider">/</span>
-      <span class="tool-badge">Alliance Train Schedule</span>
+      <span class="tool-badge">Alliance Train</span>
     </div>
   </nav>
 
@@ -986,7 +972,7 @@
 
     <!-- FULL 7-DAY SCHEDULE TABLE -->
     <div class="schedule-section-title">
-      <span>📅 OFFICIAL 7-DAY LINEUP (MONDAY – SUNDAY)</span>
+      <span>📅 7-DAY LINEUP (MONDAY – SUNDAY)</span>
       <span id="label-schedule-state" style="font-size: 10px; color: var(--steel-dim);">CONNECTING TO CLOUD...</span>
     </div>
     <div class="table-card">
@@ -1029,13 +1015,15 @@
           <tr>
             <td class="day-cell">Wednesday</td>
             <td>
-              <select class="editable-select" id="select-wed-cond">
+              <div class="slot-display conductor-slot view-only-pill" id="slot-wed-cond">--- STANDBY ---</div>
+              <select class="editable-select r45-select" id="select-wed-cond">
                 <option value="">-- Merited Member --</option>
               </select>
               <span class="criteria-sub">Chosen for <strong>Special Merits</strong> (DE help, battle participation; decided by R4)</span>
             </td>
             <td>
-              <select class="editable-select" id="select-wed-vip">
+              <div class="slot-display vip-slot view-only-pill" id="slot-wed-vip">--- STANDBY ---</div>
+              <select class="editable-select r45-select" id="select-wed-vip">
                 <option value="">-- VIP's Choice --</option>
               </select>
               <span class="criteria-sub"><strong>VIP's choice</strong> (Decided independently)</span>
@@ -1063,7 +1051,8 @@
               <span class="criteria-sub">Random selection from the <strong>entire alliance (excluding R4)</strong></span>
             </td>
             <td>
-              <select class="editable-select" id="select-fri-vip">
+              <div class="slot-display vip-slot view-only-pill" id="slot-fri-vip">--- STANDBY ---</div>
+              <select class="editable-select r45-select" id="select-fri-vip">
                 <option value="">-- VIP's Choice --</option>
               </select>
               <span class="criteria-sub"><strong>VIP's choice</strong> (Decided independently)</span>
@@ -1186,8 +1175,8 @@
     let isR45 = sessionStorage.getItem("grimm_r45_auth") === "true";
     let currentEditingPool = null;
 
-    // Helper: Populates any dropdown with the latest alliance roster
-    function populateDropdown(selectEl, selectedVal, defaultLabel) {
+    // Helper: Populates dropdown and keeps text pill synced
+    function populateDropdown(selectEl, selectedVal, defaultLabel, pillEl) {
       if (!selectEl) return;
       const cur = selectedVal !== undefined ? selectedVal : selectEl.value;
       selectEl.innerHTML = "";
@@ -1212,14 +1201,15 @@
       }
 
       if (cur) selectEl.value = cur;
+      if (pillEl) pillEl.innerText = cur || defaultLabel;
     }
 
     function refreshAllDropdowns() {
-      populateDropdown(document.getElementById("select-wed-cond"), undefined, "Merited Member");
-      populateDropdown(document.getElementById("select-wed-vip"), undefined, "VIP's Choice");
-      populateDropdown(document.getElementById("select-fri-vip"), undefined, "VIP's Choice");
+      populateDropdown(document.getElementById("select-wed-cond"), undefined, "Merited Member", document.getElementById("slot-wed-cond"));
+      populateDropdown(document.getElementById("select-wed-vip"), undefined, "VIP's Choice", document.getElementById("slot-wed-vip"));
+      populateDropdown(document.getElementById("select-fri-vip"), undefined, "VIP's Choice", document.getElementById("slot-fri-vip"));
       const sunSelect = document.getElementById("select-sun-vip");
-      if (sunSelect) populateDropdown(sunSelect, undefined, "Driver's Choice");
+      if (sunSelect) populateDropdown(sunSelect, undefined, "Driver's Choice", document.getElementById("slot-sun-vip-pill"));
     }
 
     async function syncRosterFromHomepage() {
@@ -1298,14 +1288,29 @@
       document.getElementById("slot-tue-cond").innerText = item.tuesday.cond || "---";
       document.getElementById("slot-tue-vip").innerText = item.tuesday.vip || "---";
 
-      populateDropdown(document.getElementById("select-wed-cond"), item.wednesday ? item.wednesday.cond : "", "Merited Member");
-      populateDropdown(document.getElementById("select-wed-vip"), item.wednesday ? item.wednesday.vip : "", "VIP's Choice");
+      populateDropdown(
+        document.getElementById("select-wed-cond"),
+        item.wednesday ? item.wednesday.cond : "",
+        "Merited Member",
+        document.getElementById("slot-wed-cond")
+      );
+      populateDropdown(
+        document.getElementById("select-wed-vip"),
+        item.wednesday ? item.wednesday.vip : "",
+        "VIP's Choice",
+        document.getElementById("slot-wed-vip")
+      );
 
       document.getElementById("slot-thu-cond").innerText = item.thursday.cond || "---";
       document.getElementById("slot-thu-vip").innerText = item.thursday.vip || "---";
       document.getElementById("slot-fri-cond").innerText = item.friday.cond || "---";
 
-      populateDropdown(document.getElementById("select-fri-vip"), item.friday ? item.friday.vip : "", "VIP's Choice");
+      populateDropdown(
+        document.getElementById("select-fri-vip"),
+        item.friday ? item.friday.vip : "",
+        "VIP's Choice",
+        document.getElementById("slot-fri-vip")
+      );
 
       document.getElementById("slot-sat-cond").innerText = item.saturday.cond || "---";
       document.getElementById("slot-sat-vip").innerText = item.saturday.vip || "---";
@@ -1316,7 +1321,10 @@
         if (slotSun) slotSun.innerText = item.sunday.vip || "---";
       } else {
         const selectSun = document.getElementById("select-sun-vip");
-        if (selectSun) populateDropdown(selectSun, item.sunday ? item.sunday.vip : "", "Driver's Choice");
+        const pillSun = document.getElementById("slot-sun-vip-pill");
+        if (selectSun) {
+          populateDropdown(selectSun, item.sunday ? item.sunday.vip : "", "Driver's Choice", pillSun);
+        }
       }
     }
 
@@ -1324,7 +1332,6 @@
     function updateAuthUI() {
       const authBtn = document.getElementById("auth-btn");
       const badge = document.getElementById("role-status-badge");
-      const selects = document.querySelectorAll(".editable-select");
 
       if (isR45) {
         document.body.classList.add("r45-mode");
@@ -1335,7 +1342,6 @@
         badge.innerText = "R4/5 ACCESS";
         badge.style.color = "var(--success-green)";
         badge.style.borderColor = "var(--success-green)";
-        selects.forEach(el => el.removeAttribute("disabled"));
       } else {
         document.body.classList.remove("r45-mode");
         authBtn.innerText = "ᛟ R4/5 LOGIN ᛟ";
@@ -1345,7 +1351,6 @@
         badge.innerText = "VIEW ONLY";
         badge.style.color = "var(--steel-dim)";
         badge.style.borderColor = "rgba(160, 190, 210, 0.2)";
-        selects.forEach(el => el.setAttribute("disabled", "true"));
       }
       renderHistory();
     }
@@ -1408,8 +1413,11 @@
       } else {
         document.getElementById("slot-sun-cond").innerText = "R4 (Rotating)";
         subSunCond.innerText = "Strict In-Order R4 Conductor Queue";
-        sunVipWrapper.innerHTML = `<select class="editable-select" id="select-sun-vip"><option value="">-- Driver's Choice --</option></select>`;
-        populateDropdown(document.getElementById("select-sun-vip"), undefined, "Driver's Choice");
+        sunVipWrapper.innerHTML = `
+          <div class="slot-display vip-slot view-only-pill" id="slot-sun-vip-pill">Driver's Choice</div>
+          <select class="editable-select r45-select" id="select-sun-vip"><option value="">-- Driver's Choice --</option></select>
+        `;
+        populateDropdown(document.getElementById("select-sun-vip"), undefined, "Driver's Choice", document.getElementById("slot-sun-vip-pill"));
         subSunVip.innerText = "Driver's choice (Decided independently)";
       }
       updateAuthUI();
@@ -1755,32 +1763,31 @@
     // 8. EXPORT (ALLIANCE MAIL FORMAT)
     function copyCurrentSchedule() {
       const getVal = (slotId, selectId, defaultFallback) => {
-        if (selectId) {
+        if (isR45 && selectId) {
           const el = document.getElementById(selectId);
           if (el && el.value) return el.value;
-          return defaultFallback;
         }
         const el = document.getElementById(slotId);
-        return el ? el.innerText : "---";
+        return (el && el.innerText.trim()) ? el.innerText.trim() : defaultFallback;
       };
 
-      const monC = getVal("slot-mon-cond");
-      const monV = getVal("slot-mon-vip");
-      const tueC = getVal("slot-tue-cond");
-      const tueV = getVal("slot-tue-vip");
-      const wedC = getVal(null, "select-wed-cond", "Merited Member");
-      const wedV = getVal(null, "select-wed-vip", "VIP's Choice");
-      const thuC = getVal("slot-thu-cond");
-      const thuV = getVal("slot-thu-vip");
-      const friC = getVal("slot-fri-cond");
-      const friV = getVal(null, "select-fri-vip", "VIP's Choice");
+      const monC = getVal("slot-mon-cond", null, "---");
+      const monV = getVal("slot-mon-vip", null, "---");
+      const tueC = getVal("slot-tue-cond", null, "---");
+      const tueV = getVal("slot-tue-vip", null, "---");
+      const wedC = getVal("slot-wed-cond", "select-wed-cond", "Merited Member");
+      const wedV = getVal("slot-wed-vip", "select-wed-vip", "VIP's Choice");
+      const thuC = getVal("slot-thu-cond", null, "---");
+      const thuV = getVal("slot-thu-vip", null, "---");
+      const friC = getVal("slot-fri-cond", null, "---");
+      const friV = getVal("slot-fri-vip", "select-fri-vip", "VIP's Choice");
 
-      const satC = getVal("slot-sat-cond");
-      const satV = getVal("slot-sat-vip");
-      const sunC = getVal("slot-sun-cond");
+      const satC = getVal("slot-sat-cond", null, "---");
+      const satV = getVal("slot-sat-vip", null, "---");
+      const sunC = getVal("slot-sun-cond", null, "---");
       const sunV = (activeWeekType === "EVEN") 
-        ? getVal("slot-sun-vip") 
-        : getVal(null, "select-sun-vip", "Driver's Choice");
+        ? getVal("slot-sun-vip", null, "---") 
+        : getVal("slot-sun-vip-pill", "select-sun-vip", "Driver's Choice");
 
       const text = `[ALLIANCE TRAIN ROSTER - ${activeWeekType} WEEK]\n` +
         `MON: Cond: ${monC} / VIP: ${monV}\n` +
@@ -1815,6 +1822,17 @@
     document.getElementById("modal-search-input").addEventListener("input", filterModalRoster);
     document.getElementById("pool-modal").addEventListener("click", (e) => {
       if (e.target.id === "pool-modal") closePoolModal();
+    });
+
+    // Sync pill text in real time whenever an R4/5 changes a dropdown
+    document.getElementById("select-wed-cond").addEventListener("change", (e) => {
+      document.getElementById("slot-wed-cond").innerText = e.target.value || "Merited Member";
+    });
+    document.getElementById("select-wed-vip").addEventListener("change", (e) => {
+      document.getElementById("slot-wed-vip").innerText = e.target.value || "VIP's Choice";
+    });
+    document.getElementById("select-fri-vip").addEventListener("change", (e) => {
+      document.getElementById("slot-fri-vip").innerText = e.target.value || "VIP's Choice";
     });
 
     // INITIALIZATION
