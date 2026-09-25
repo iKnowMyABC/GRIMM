@@ -35,12 +35,71 @@
       color: var(--ice-white);
       font-family: 'Inter', sans-serif;
       min-height: 100vh;
-      padding: 20px 12px 60px;
+      padding: 0 12px 60px;
       display: flex;
       flex-direction: column;
       align-items: center;
       background-image: radial-gradient(circle at 50% 10%, rgba(120, 180, 232, 0.08) 0%, transparent 70%);
       -webkit-tap-highlight-color: transparent;
+    }
+
+    /* TOP GLOBAL NAVIGATION BAR (Matches Scattered Supplies) */
+    .top-nav-bar {
+      width: 100%;
+      background: rgba(7, 10, 14, 0.92);
+      border-bottom: 1px solid var(--frost-border);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      margin-bottom: 24px;
+    }
+
+    .top-nav-content {
+      width: 100%;
+      max-width: 1100px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-brand-link {
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--ice-white);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-brand-link:hover {
+      color: var(--frost-bright);
+      text-shadow: 0 0 10px var(--frost-glow);
+    }
+
+    .nav-divider {
+      color: var(--steel-dim);
+      font-size: 13px;
+    }
+
+    .nav-tool-name {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: var(--frost-bright);
+      text-transform: uppercase;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .container {
@@ -418,7 +477,39 @@
       padding: 4px 0;
     }
 
-    /* HISTORY ARCHIVE */
+    /* EXPORT STRIP (R4/5 ONLY) */
+    .export-strip {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-export {
+      background: rgba(120, 180, 232, 0.1);
+      border: 1px solid var(--frost-bright);
+      color: var(--ice-white);
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 10px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      min-height: 40px;
+    }
+
+    .btn-export:hover {
+      background: rgba(120, 180, 232, 0.25);
+      box-shadow: 0 0 12px var(--frost-glow);
+    }
+
+    /* HISTORY ARCHIVE (NOW R4/5 ONLY) */
     .deck-section {
       background: var(--card-bg);
       border: 1px solid var(--frost-border);
@@ -496,38 +587,6 @@
 
     .history-day-card .c-val { color: var(--conductor-bright); word-break: break-all; }
     .history-day-card .v-val { color: var(--vip-gold-light); word-break: break-all; }
-
-    /* EXPORT STRIP (OFFICER ONLY) */
-    .export-strip {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .btn-export {
-      background: rgba(120, 180, 232, 0.1);
-      border: 1px solid var(--frost-bright);
-      color: var(--ice-white);
-      font-family: 'Cinzel', serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      padding: 10px 18px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      min-height: 40px;
-    }
-
-    .btn-export:hover {
-      background: rgba(120, 180, 232, 0.25);
-      box-shadow: 0 0 12px var(--frost-glow);
-    }
 
     /* MODAL */
     .modal-backdrop {
@@ -633,7 +692,7 @@
     ======================================================== */
     @media (max-width: 768px) {
       body {
-        padding: 12px 8px 50px;
+        padding: 0 8px 50px;
       }
 
       .schedule-header {
@@ -767,6 +826,15 @@
   </style>
 </head>
 <body>
+
+  <!-- TOP NAVIGATION BAR (LIKE SCATTERED SUPPLIES) -->
+  <div class="top-nav-bar">
+    <div class="top-nav-content">
+      <a href="../index.html" class="nav-brand-link">ᛟ GRMM ᛟ</a>
+      <span class="nav-divider">/</span>
+      <span class="nav-tool-name">Alliance Train Scheduler</span>
+    </div>
+  </div>
 
   <div class="container">
 
@@ -977,8 +1045,8 @@
       </button>
     </div>
 
-    <!-- HISTORY LOGS / DEPARTURE ARCHIVE -->
-    <div class="deck-section">
+    <!-- HISTORY LOGS / DEPARTURE ARCHIVE (R4/5 ONLY) -->
+    <div class="deck-section r45-only-block">
       <div class="schedule-section-title">
         <span>ᛟ SCHEDULE ARCHIVE (CONFIRMED DEPARTURES)</span>
         <span id="log-counter" style="font-size: 10px; color: var(--steel-dim);">0 WEEKS LOGGED</span>
@@ -1455,7 +1523,7 @@
       }
     }
 
-    // 7. RENDER HISTORY ARCHIVE
+    // 7. RENDER HISTORY ARCHIVE (R4/5 ONLY)
     function renderHistory() {
       const feed = document.getElementById("history-feed-display");
       const count = document.getElementById("log-counter");
