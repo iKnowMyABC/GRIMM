@@ -87,18 +87,6 @@
       flex-wrap: wrap;
     }
 
-    .badge-roster {
-      background: rgba(120, 180, 232, 0.15);
-      border: 1px solid var(--frost-bright);
-      color: var(--frost-bright);
-      font-family: 'Cinzel', serif;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 4px;
-      letter-spacing: 1px;
-    }
-
     .btn-auth-toggle {
       background: rgba(209, 138, 69, 0.15);
       border: 1px solid var(--rollover-gold);
@@ -509,38 +497,12 @@
     .history-day-card .c-val { color: var(--conductor-bright); word-break: break-all; }
     .history-day-card .v-val { color: var(--vip-gold-light); word-break: break-all; }
 
-    /* RULES & EXPORT PANEL */
-    .rules-card {
-      background: var(--card-bg);
-      border: 1px solid var(--frost-border);
-      border-radius: 8px;
-      padding: 14px 16px;
-      margin-bottom: 20px;
-    }
-
-    .rules-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .rule-item h4 {
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      color: var(--ice-white);
-      margin-bottom: 3px;
-    }
-
-    .rule-item p {
-      font-size: 10px;
-      color: var(--steel-muted);
-      line-height: 1.4;
-    }
-
+    /* EXPORT STRIP (OFFICER ONLY) */
     .export-strip {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
     }
 
@@ -552,7 +514,7 @@
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 1px;
-      padding: 10px 14px;
+      padding: 10px 18px;
       border-radius: 4px;
       cursor: pointer;
       display: flex;
@@ -560,6 +522,11 @@
       gap: 6px;
       transition: all 0.2s;
       min-height: 40px;
+    }
+
+    .btn-export:hover {
+      background: rgba(120, 180, 232, 0.25);
+      box-shadow: 0 0 12px var(--frost-glow);
     }
 
     /* MODAL */
@@ -663,14 +630,12 @@
 
     /* ========================================================
        MOBILE-FIRST RESPONSIVE TRANSFORMATION (< 768px)
-       Transforms the Table into stacked Cards
     ======================================================== */
     @media (max-width: 768px) {
       body {
         padding: 12px 8px 50px;
       }
 
-      /* Stack Header Elements */
       .schedule-header {
         flex-direction: column;
         align-items: stretch;
@@ -692,7 +657,6 @@
         flex: 1;
       }
 
-      /* Stack Staging Banner */
       .staging-banner {
         flex-direction: column;
         align-items: stretch;
@@ -703,12 +667,10 @@
         width: 100%;
       }
 
-      /* Pools Grid: 2 Columns on mobile */
       .pools-grid {
         grid-template-columns: 1fr 1fr;
       }
 
-      /* Controls Strip: Stack buttons full-width */
       .controls-strip {
         flex-direction: column;
         align-items: stretch;
@@ -727,7 +689,6 @@
         width: 100%;
       }
 
-      /* TABLE TO CARD TRANSFORMATION */
       table.schedule-table,
       table.schedule-table thead,
       table.schedule-table tbody,
@@ -737,14 +698,12 @@
         display: block;
       }
 
-      /* Hide Table Header */
       table.schedule-table thead tr {
         position: absolute;
         top: -9999px;
         left: -9999px;
       }
 
-      /* Each row becomes a standalone card */
       table.schedule-table tr {
         background: rgba(14, 20, 28, 0.95);
         border: 1px solid rgba(120, 180, 232, 0.16);
@@ -758,7 +717,6 @@
         margin-bottom: 0;
       }
 
-      /* The Day Header */
       table.schedule-table td.day-cell {
         width: 100%;
         font-size: 14px;
@@ -769,7 +727,6 @@
         letter-spacing: 1.5px;
       }
 
-      /* Conductor & VIP slots inside the card */
       table.schedule-table td:not(.day-cell) {
         width: 100%;
         padding: 10px 0 6px;
@@ -780,7 +737,6 @@
         border-bottom: none;
       }
 
-      /* Force slot displays and inputs to stretch 100% */
       .slot-display {
         width: 100%;
         box-sizing: border-box;
@@ -795,12 +751,6 @@
         box-sizing: border-box;
       }
 
-      /* Rules Grid */
-      .rules-grid {
-        grid-template-columns: 1fr;
-      }
-
-      /* Export Buttons full-width */
       .export-strip {
         flex-direction: column;
       }
@@ -810,7 +760,6 @@
         justify-content: center;
       }
 
-      /* Modal inside small screens */
       .modal-body {
         grid-template-columns: 1fr;
       }
@@ -824,15 +773,14 @@
     <!-- HEADER -->
     <div class="schedule-header">
       <div class="header-titles">
-        <h1>Weekly Train Schedule &amp; Guidelines</h1>
-        <p>GRIMM [grmm] • Server 2109 • Operational Policy</p>
+        <h1>Weekly Train Schedule</h1>
+        <p>GRIMM [grmm] • Server 2109</p>
       </div>
       <div class="header-controls">
         <span class="guest-badge" id="role-status-badge">VIEW ONLY</span>
         <button class="btn-auth-toggle" id="auth-btn">
           ᛟ R4/5 LOGIN ᛟ
         </button>
-        <div class="badge-roster">OFFICIAL ROSTER</div>
       </div>
     </div>
 
@@ -1022,6 +970,13 @@
       </table>
     </div>
 
+    <!-- EXPORT STRIP (R4/5 ONLY) -->
+    <div class="export-strip r45-only">
+      <button class="btn-export" id="btn-export-game">
+        <span>✉</span> COPY ALLIANCE MAIL FORMAT
+      </button>
+    </div>
+
     <!-- HISTORY LOGS / DEPARTURE ARCHIVE -->
     <div class="deck-section">
       <div class="schedule-section-title">
@@ -1029,41 +984,6 @@
         <span id="log-counter" style="font-size: 10px; color: var(--steel-dim);">0 WEEKS LOGGED</span>
       </div>
       <div class="history-feed" id="history-feed-display"></div>
-    </div>
-
-    <!-- RULES PANEL -->
-    <div class="rules-card">
-      <div class="schedule-section-title" style="margin-bottom: 10px;">
-        <span>📌 OPERATIONAL RULES &amp; GUIDELINES</span>
-      </div>
-      <div class="rules-grid">
-        <div class="rule-item">
-          <h4>1. Separate Daily Lists</h4>
-          <p>Each day operates on a completely separate Conductor and VIP selection pool.</p>
-        </div>
-        <div class="rule-item">
-          <h4>2. Duplicate Protection</h4>
-          <p>If a drawn player was already scheduled on that same day last week, the next candidate is selected.</p>
-        </div>
-        <div class="rule-item">
-          <h4>3. Strict In-Order R4 Rotation</h4>
-          <p>R4 Conductors and VIPs rotate sequentially in fixed order without random skips.</p>
-        </div>
-        <div class="rule-item">
-          <h4>4. Schedule Publication</h4>
-          <p>The finalized list is posted Sunday evening or Monday morning so all members know the roster in advance.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- EXPORT STRIP -->
-    <div class="export-strip">
-      <button class="btn-export" id="btn-export-discord">
-        <span>📋</span> COPY DISCORD FORMAT
-      </button>
-      <button class="btn-export" id="btn-export-game">
-        <span>✉</span> COPY ALLIANCE MAIL FORMAT
-      </button>
     </div>
 
   </div>
@@ -1659,8 +1579,8 @@
       }
     }
 
-    // EXPORT
-    function copyCurrentSchedule(mode) {
+    // EXPORT (ALLIANCE MAIL FORMAT)
+    function copyCurrentSchedule() {
       const getVal = (slotId, inputId) => {
         if (inputId) {
           const el = document.getElementById(inputId);
@@ -1687,31 +1607,18 @@
       const sunC = getVal("slot-sun-cond");
       const sunV = (activeWeekType === "EVEN") ? getVal("slot-sun-vip") : getVal(null, "input-sun-vip");
 
-      let text = "";
-      if (mode === "discord") {
-        text = `__**🚂 WEEKLY TRAIN SCHEDULE (${activeWeekType} WEEK)**__\n` +
-          `• **Monday (Top 15 VS):** Conductor: **${monC}** | VIP: **${monV}**\n` +
-          `• **Tuesday (DS Roster):** Conductor: **${tueC}** | VIP: **${tueV}**\n` +
-          `• **Wednesday (Special Merits):** Conductor: **${wedC}** | VIP: **${wedV}**\n` +
-          `• **Thursday (Top 10 Donors):** Conductor: **${thuC}** | VIP: **${thuV}**\n` +
-          `• **Friday (Alliance Lottery):** Conductor: **${friC}** | VIP: **${friV}**\n` +
-          `• **Saturday:** Conductor: **${satC}** | VIP: **${satV}**\n` +
-          `• **Sunday:** Conductor: **${sunC}** | VIP: **${sunV}**\n\n` +
-          `*Official roster confirmed & published.*`;
-      } else {
-        text = `[ALLIANCE TRAIN ROSTER - ${activeWeekType} WEEK]\n` +
-          `MON: Cond: ${monC} / VIP: ${monV}\n` +
-          `TUE: Cond: ${tueC} / VIP: ${tueV}\n` +
-          `WED: Cond: ${wedC} / VIP: ${wedV}\n` +
-          `THU: Cond: ${thuC} / VIP: ${thuV}\n` +
-          `FRI: Cond: ${friC} / VIP: ${friV}\n` +
-          `SAT: Cond: ${satC} / VIP: ${satV}\n` +
-          `SUN: Cond: ${sunC} / VIP: ${sunV}\n` +
-          `Official schedule. Be on time for station platform departure!`;
-      }
+      const text = `[ALLIANCE TRAIN ROSTER - ${activeWeekType} WEEK]\n` +
+        `MON: Cond: ${monC} / VIP: ${monV}\n` +
+        `TUE: Cond: ${tueC} / VIP: ${tueV}\n` +
+        `WED: Cond: ${wedC} / VIP: ${wedV}\n` +
+        `THU: Cond: ${thuC} / VIP: ${thuV}\n` +
+        `FRI: Cond: ${friC} / VIP: ${friV}\n` +
+        `SAT: Cond: ${satC} / VIP: ${satV}\n` +
+        `SUN: Cond: ${sunC} / VIP: ${sunV}\n` +
+        `Official schedule. Be on time for station platform departure!`;
 
       navigator.clipboard.writeText(text).then(() => {
-        alert("Schedule copied to clipboard in " + (mode === "discord" ? "Discord" : "Game Mail") + " format!");
+        alert("Schedule copied to clipboard in Alliance Mail format!");
       });
     }
 
@@ -1721,8 +1628,7 @@
     document.getElementById("btn-odd").addEventListener("click", () => setWeekType("ODD"));
     document.getElementById("btn-generate-draft").addEventListener("click", generateDraftSchedule);
     document.getElementById("btn-confirm-publish").addEventListener("click", confirmWeeklySchedule);
-    document.getElementById("btn-export-discord").addEventListener("click", () => copyCurrentSchedule("discord"));
-    document.getElementById("btn-export-game").addEventListener("click", () => copyCurrentSchedule("game"));
+    document.getElementById("btn-export-game").addEventListener("click", copyCurrentSchedule);
 
     document.getElementById("btn-pool-vs").addEventListener("click", () => openPoolPicker("vs"));
     document.getElementById("btn-pool-ds").addEventListener("click", () => openPoolPicker("ds"));
