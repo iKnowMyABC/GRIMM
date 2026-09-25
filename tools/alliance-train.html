@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>GRIMM [grmm] — Alliance Train Schedule</title>
+  <title>GRIMM [grmm] — Alliance Train</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,26 +11,28 @@
 
   <style>
     :root {
-  --ice: #dcecff;
-  --ice-dim: #8ea9c2;
-  --steel: #607487;
-  --dark: #070a0e;
-  --fire: #d18a45;
-  --fire-light: #f0bd75;
-  --white: #f4f7fa;
+      --ice: #dcecff;
+      --ice-dim: #8ea9c2;
+      --steel: #607487;
+      --dark: #070a0e;
+      --fire: #d18a45;
+      --fire-light: #f0bd75;
+      --white: #f4f7fa;
 
-  --card-bg: rgba(12, 17, 23, 0.9);
-  --card-subtle: rgba(17, 24, 34, 0.95);
-  --frost-border: rgba(160, 190, 210, 0.22);
-  --frost-bright: #78b4e8;
-  --frost-glow: rgba(120, 180, 232, 0.25);
-  --steel-muted: #9ab0c2;
-  --steel-dim: #5a6e7f;
+      --card-bg: rgba(12, 17, 23, 0.9);
+      --card-subtle: rgba(17, 24, 34, 0.95);
+      --frost-border: rgba(160, 190, 210, 0.22);
+      --frost-bright: #78b4e8;
+      --frost-glow: rgba(120, 180, 232, 0.25);
+      --steel-muted: #9ab0c2;
+      --steel-dim: #5a6e7f;
 
-  --conductor-crimson: #c0392b;
-  --conductor-bright: #e74c3c;
-  --success-green: #2ecc71;
-}
+      --conductor-crimson: #c0392b;
+      --conductor-bright: #e74c3c;
+      --vip-gold: #f39c12;
+      --vip-gold-light: #f1c40f;
+      --success-green: #2ecc71;
+    }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -164,7 +166,6 @@
       flex-wrap: wrap;
     }
 
-    /* Login / Auth Button */
     .btn-auth-toggle {
       background: rgba(209, 138, 69, 0.12);
       border: 1px solid rgba(209, 138, 69, 0.5);
@@ -185,8 +186,9 @@
 
     .btn-auth-toggle:hover {
       background: rgba(209, 138, 69, 0.3);
-      color: #fff;
       border-color: var(--fire-light);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(209, 138, 69, 0.4);
     }
 
     /* R4/5 ACCESS CONTROLS */
@@ -224,7 +226,7 @@
     .staging-banner.active { display: flex; }
 
     .staging-text {
-      color: #ffd4a8;
+      color: var(--fire-light);
       font-family: 'Cinzel', serif;
       font-size: 11px;
       letter-spacing: 0.5px;
@@ -468,13 +470,15 @@
       color: var(--conductor-bright);
     }
 
+    /* RESTORED VIBRANT VIP GOLD */
     .slot-display.vip-slot {
       background: rgba(243, 156, 18, 0.15);
       border: 1px solid var(--vip-gold);
       color: var(--vip-gold-light);
     }
 
-    .editable-input {
+    /* ROSTER SELECTION DROPDOWNS */
+    .editable-select {
       background: rgba(7, 10, 14, 0.85);
       border: 1px solid var(--frost-border);
       color: var(--white);
@@ -486,15 +490,19 @@
       max-width: 220px;
       outline: none;
       min-height: 38px;
+      cursor: pointer;
     }
 
-    .editable-input:focus { border-color: var(--frost-bright); }
-    .editable-input:disabled {
-      background: transparent;
-      border-color: transparent;
+    .editable-select:focus {
+      border-color: var(--frost-bright);
+    }
+
+    .editable-select:disabled {
+      background: rgba(12, 17, 23, 0.5);
+      border-color: rgba(160, 190, 210, 0.15);
       color: var(--white);
       cursor: default;
-      padding: 4px 0;
+      opacity: 0.9;
     }
 
     /* EXPORT STRIP (R4/5 ONLY) */
@@ -506,9 +514,9 @@
     }
 
     .btn-export {
-      background: rgba(209, 138, 69, 0.15);
-      border: 1px solid var(--fire);
-      color: #ffd4a8;
+      background: rgba(209, 138, 69, 0.12);
+      border: 1px solid rgba(209, 138, 69, 0.5);
+      color: var(--fire-light);
       font-family: 'Cinzel', serif;
       font-size: 10px;
       font-weight: 700;
@@ -524,12 +532,13 @@
     }
 
     .btn-export:hover {
-      background: rgba(209, 138, 69, 0.35);
-      box-shadow: 0 0 12px rgba(209, 138, 69, 0.4);
-      color: #fff;
+      background: rgba(209, 138, 69, 0.3);
+      border-color: var(--fire-light);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(209, 138, 69, 0.35);
     }
 
-    /* HISTORY ARCHIVE (RESTORED - R4/5 ONLY) */
+    /* HISTORY ARCHIVE (R4/5 ONLY) */
     .deck-section {
       background: var(--card-bg);
       border: 1px solid var(--frost-border);
@@ -734,7 +743,7 @@
         font-size: 10px !important;
         letter-spacing: 1px !important;
         padding: 3px 6px !important;
-        max-width: 180px !important;
+        max-width: none !important;
       }
 
       .container {
@@ -850,7 +859,7 @@
         font-size: 12px;
       }
 
-      .editable-input {
+      .editable-select {
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
@@ -869,18 +878,11 @@
         grid-template-columns: 1fr;
       }
     }
-
-    @media (max-width: 450px) {
-      .tool-badge,
-      .nav-tool-divider {
-        display: none;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <!-- Top Brand Navigation Link (Matches Scattered Supplies) -->
+  <!-- Top Brand Navigation Link -->
   <nav>
     <div class="nav-tool-indicator">
       <a href="../#home" class="nav-brand">
@@ -898,7 +900,6 @@
     <div class="schedule-header">
       <div class="header-titles">
         <h1>Weekly Train Schedule</h1>
-        <p>GRIMM [grmm] • Server 2109</p>
       </div>
       <div class="header-controls">
         <span class="guest-badge" id="role-status-badge">VIEW ONLY</span>
@@ -911,7 +912,7 @@
     <!-- STAGING / CONFIRMATION BANNER (R4/5 ONLY) -->
     <div class="staging-banner" id="staging-banner">
       <div class="staging-text">
-        ᛟ <strong>DRAFT GENERATED:</strong> Review assignments and enter manual inputs. Tap <strong>CONFIRM &amp; PUBLISH SCHEDULE</strong> to log officially.
+        ᛟ <strong>DRAFT GENERATED:</strong> Review assignments and select manual roster picks. Tap <strong>CONFIRM &amp; PUBLISH SCHEDULE</strong> to log officially.
       </div>
       <button class="btn-confirm-publish" id="btn-confirm-publish">
         ᛟ CONFIRM &amp; PUBLISH SCHEDULE ᛟ
@@ -1028,11 +1029,15 @@
           <tr>
             <td class="day-cell">Wednesday</td>
             <td>
-              <input type="text" class="editable-input" id="input-wed-cond" placeholder="Merited Member..." />
+              <select class="editable-select" id="select-wed-cond">
+                <option value="">-- Merited Member --</option>
+              </select>
               <span class="criteria-sub">Chosen for <strong>Special Merits</strong> (DE help, battle participation; decided by R4)</span>
             </td>
             <td>
-              <input type="text" class="editable-input" id="input-wed-vip" placeholder="VIP's Choice..." />
+              <select class="editable-select" id="select-wed-vip">
+                <option value="">-- VIP's Choice --</option>
+              </select>
               <span class="criteria-sub"><strong>VIP's choice</strong> (Decided independently)</span>
             </td>
           </tr>
@@ -1058,7 +1063,9 @@
               <span class="criteria-sub">Random selection from the <strong>entire alliance (excluding R4)</strong></span>
             </td>
             <td>
-              <input type="text" class="editable-input" id="input-fri-vip" placeholder="VIP's Choice..." />
+              <select class="editable-select" id="select-fri-vip">
+                <option value="">-- VIP's Choice --</option>
+              </select>
               <span class="criteria-sub"><strong>VIP's choice</strong> (Decided independently)</span>
             </td>
           </tr>
@@ -1136,10 +1143,10 @@
     import { 
       getDatabase, 
       ref, 
-      get,
+      get, 
       set, 
-      push,
-      remove,
+      push, 
+      remove, 
       onValue 
     } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
@@ -1179,6 +1186,42 @@
     let isR45 = sessionStorage.getItem("grimm_r45_auth") === "true";
     let currentEditingPool = null;
 
+    // Helper: Populates any dropdown with the latest alliance roster
+    function populateDropdown(selectEl, selectedVal, defaultLabel) {
+      if (!selectEl) return;
+      const cur = selectedVal !== undefined ? selectedVal : selectEl.value;
+      selectEl.innerHTML = "";
+
+      const defaultOpt = document.createElement("option");
+      defaultOpt.value = "";
+      defaultOpt.textContent = `-- ${defaultLabel} --`;
+      selectEl.appendChild(defaultOpt);
+
+      ALLIANCE_ROSTER.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        selectEl.appendChild(opt);
+      });
+
+      if (cur && !ALLIANCE_ROSTER.includes(cur)) {
+        const extraOpt = document.createElement("option");
+        extraOpt.value = cur;
+        extraOpt.textContent = cur;
+        selectEl.appendChild(extraOpt);
+      }
+
+      if (cur) selectEl.value = cur;
+    }
+
+    function refreshAllDropdowns() {
+      populateDropdown(document.getElementById("select-wed-cond"), undefined, "Merited Member");
+      populateDropdown(document.getElementById("select-wed-vip"), undefined, "VIP's Choice");
+      populateDropdown(document.getElementById("select-fri-vip"), undefined, "VIP's Choice");
+      const sunSelect = document.getElementById("select-sun-vip");
+      if (sunSelect) populateDropdown(sunSelect, undefined, "Driver's Choice");
+    }
+
     async function syncRosterFromHomepage() {
       try {
         const response = await fetch("../index.html");
@@ -1205,6 +1248,7 @@
         poolsData.donors = ALLIANCE_ROSTER.slice(1, 11);
 
         initCounts();
+        refreshAllDropdowns();
       } catch (err) {
         console.warn("Homepage sync fallback triggered:", err);
       }
@@ -1254,24 +1298,25 @@
       document.getElementById("slot-tue-cond").innerText = item.tuesday.cond || "---";
       document.getElementById("slot-tue-vip").innerText = item.tuesday.vip || "---";
 
-      document.getElementById("input-wed-cond").value = item.wednesday ? item.wednesday.cond : "";
-      document.getElementById("input-wed-vip").value = item.wednesday ? item.wednesday.vip : "";
+      populateDropdown(document.getElementById("select-wed-cond"), item.wednesday ? item.wednesday.cond : "", "Merited Member");
+      populateDropdown(document.getElementById("select-wed-vip"), item.wednesday ? item.wednesday.vip : "", "VIP's Choice");
 
       document.getElementById("slot-thu-cond").innerText = item.thursday.cond || "---";
       document.getElementById("slot-thu-vip").innerText = item.thursday.vip || "---";
       document.getElementById("slot-fri-cond").innerText = item.friday.cond || "---";
 
-      document.getElementById("input-fri-vip").value = item.friday ? item.friday.vip : "";
+      populateDropdown(document.getElementById("select-fri-vip"), item.friday ? item.friday.vip : "", "VIP's Choice");
 
       document.getElementById("slot-sat-cond").innerText = item.saturday.cond || "---";
       document.getElementById("slot-sat-vip").innerText = item.saturday.vip || "---";
       document.getElementById("slot-sun-cond").innerText = item.sunday.cond || "---";
 
       if (activeWeekType === "EVEN") {
-        document.getElementById("slot-sun-vip").innerText = item.sunday.vip || "---";
+        const slotSun = document.getElementById("slot-sun-vip");
+        if (slotSun) slotSun.innerText = item.sunday.vip || "---";
       } else {
-        const inputSun = document.getElementById("input-sun-vip");
-        if (inputSun) inputSun.value = item.sunday.vip || "";
+        const selectSun = document.getElementById("select-sun-vip");
+        if (selectSun) populateDropdown(selectSun, item.sunday ? item.sunday.vip : "", "Driver's Choice");
       }
     }
 
@@ -1279,7 +1324,7 @@
     function updateAuthUI() {
       const authBtn = document.getElementById("auth-btn");
       const badge = document.getElementById("role-status-badge");
-      const inputs = document.querySelectorAll(".editable-input");
+      const selects = document.querySelectorAll(".editable-select");
 
       if (isR45) {
         document.body.classList.add("r45-mode");
@@ -1290,17 +1335,17 @@
         badge.innerText = "R4/5 ACCESS";
         badge.style.color = "var(--success-green)";
         badge.style.borderColor = "var(--success-green)";
-        inputs.forEach(el => el.removeAttribute("disabled"));
+        selects.forEach(el => el.removeAttribute("disabled"));
       } else {
         document.body.classList.remove("r45-mode");
         authBtn.innerText = "ᛟ R4/5 LOGIN ᛟ";
-        authBtn.style.background = "rgba(209, 138, 69, 0.15)";
-        authBtn.style.borderColor = "var(--fire)";
+        authBtn.style.background = "rgba(209, 138, 69, 0.12)";
+        authBtn.style.borderColor = "rgba(209, 138, 69, 0.5)";
         authBtn.style.color = "var(--fire-light)";
         badge.innerText = "VIEW ONLY";
         badge.style.color = "var(--steel-dim)";
         badge.style.borderColor = "rgba(160, 190, 210, 0.2)";
-        inputs.forEach(el => el.setAttribute("disabled", "true"));
+        selects.forEach(el => el.setAttribute("disabled", "true"));
       }
       renderHistory();
     }
@@ -1363,7 +1408,8 @@
       } else {
         document.getElementById("slot-sun-cond").innerText = "R4 (Rotating)";
         subSunCond.innerText = "Strict In-Order R4 Conductor Queue";
-        sunVipWrapper.innerHTML = `<input type="text" class="editable-input" id="input-sun-vip" placeholder="Driver's choice..." />`;
+        sunVipWrapper.innerHTML = `<select class="editable-select" id="select-sun-vip"><option value="">-- Driver's Choice --</option></select>`;
+        populateDropdown(document.getElementById("select-sun-vip"), undefined, "Driver's Choice");
         subSunVip.innerText = "Driver's choice (Decided independently)";
       }
       updateAuthUI();
@@ -1529,14 +1575,14 @@
     async function confirmWeeklySchedule() {
       if (!isR45 || !stagedDraft) return;
 
-      const wedCondVal = document.getElementById("input-wed-cond").value.trim() || "Merited Member";
-      const wedVipVal = document.getElementById("input-wed-vip").value.trim() || "VIP's Choice";
-      const friVipVal = document.getElementById("input-fri-vip").value.trim() || "VIP's Choice";
+      const wedCondVal = document.getElementById("select-wed-cond").value || "Merited Member";
+      const wedVipVal = document.getElementById("select-wed-vip").value || "VIP's Choice";
+      const friVipVal = document.getElementById("select-fri-vip").value || "VIP's Choice";
 
       let sunVipVal = stagedDraft.sunday.vip;
       if (activeWeekType === "ODD") {
-        const inputSun = document.getElementById("input-sun-vip");
-        sunVipVal = (inputSun && inputSun.value.trim()) ? inputSun.value.trim() : "Driver's Choice";
+        const selectSun = document.getElementById("select-sun-vip");
+        sunVipVal = (selectSun && selectSun.value) ? selectSun.value : "Driver's Choice";
       }
 
       const now = new Date();
@@ -1580,7 +1626,7 @@
       }
     }
 
-    // 7. RENDER HISTORY ARCHIVE (VISIBLE TO R4/5 ONLY)
+    // 7. RENDER HISTORY ARCHIVE (R4/5 ONLY)
     function renderHistory() {
       const feed = document.getElementById("history-feed-display");
       const count = document.getElementById("log-counter");
@@ -1708,11 +1754,11 @@
 
     // 8. EXPORT (ALLIANCE MAIL FORMAT)
     function copyCurrentSchedule() {
-      const getVal = (slotId, inputId) => {
-        if (inputId) {
-          const el = document.getElementById(inputId);
-          if (el && el.value.trim()) return el.value.trim();
-          return "VIP's Choice";
+      const getVal = (slotId, selectId, defaultFallback) => {
+        if (selectId) {
+          const el = document.getElementById(selectId);
+          if (el && el.value) return el.value;
+          return defaultFallback;
         }
         const el = document.getElementById(slotId);
         return el ? el.innerText : "---";
@@ -1722,17 +1768,19 @@
       const monV = getVal("slot-mon-vip");
       const tueC = getVal("slot-tue-cond");
       const tueV = getVal("slot-tue-vip");
-      const wedC = getVal(null, "input-wed-cond");
-      const wedV = getVal(null, "input-wed-vip");
+      const wedC = getVal(null, "select-wed-cond", "Merited Member");
+      const wedV = getVal(null, "select-wed-vip", "VIP's Choice");
       const thuC = getVal("slot-thu-cond");
       const thuV = getVal("slot-thu-vip");
       const friC = getVal("slot-fri-cond");
-      const friV = getVal(null, "input-fri-vip");
+      const friV = getVal(null, "select-fri-vip", "VIP's Choice");
 
       const satC = getVal("slot-sat-cond");
       const satV = getVal("slot-sat-vip");
       const sunC = getVal("slot-sun-cond");
-      const sunV = (activeWeekType === "EVEN") ? getVal("slot-sun-vip") : getVal(null, "input-sun-vip");
+      const sunV = (activeWeekType === "EVEN") 
+        ? getVal("slot-sun-vip") 
+        : getVal(null, "select-sun-vip", "Driver's Choice");
 
       const text = `[ALLIANCE TRAIN ROSTER - ${activeWeekType} WEEK]\n` +
         `MON: Cond: ${monC} / VIP: ${monV}\n` +
