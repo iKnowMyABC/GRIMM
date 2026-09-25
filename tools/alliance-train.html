@@ -1050,7 +1050,7 @@
             <td class="day-cell">Friday</td>
             <td>
               <div class="slot-display conductor-slot" id="slot-fri-cond">--- STANDBY ---</div>
-              <span class="criteria-sub">Random selection from the <strong>entire alliance (excluding R4)</strong></span>
+              <span class="criteria-sub">Random selection from the <strong>entire alliance (excluding R4/5)</strong></span>
             </td>
             <td>
               <div class="slot-display vip-slot view-only-pill" id="slot-fri-vip">Driver's Choice</div>
@@ -1535,7 +1535,7 @@
       const thuVip = drawEligible(remainingDonors, thuBanned);
 
       const friBanned = lastWeek && lastWeek.friday ? [lastWeek.friday.cond] : [];
-      const friPool = ALLIANCE_ROSTER.filter(n => !poolsData.r4.includes(n));
+      const friPool = ALLIANCE_ROSTER.filter(n => !poolsData.r4.includes(n) && n !== R5_LEADER);
       const friCond = drawEligible(friPool, friBanned);
 
       let satCondVal = peekNextR4Cond(0);
