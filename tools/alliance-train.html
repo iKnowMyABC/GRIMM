@@ -1095,7 +1095,7 @@
     <!-- EXPORT STRIP (R4/5 ONLY) -->
     <div class="export-strip r45-only">
       <button class="btn-export" id="btn-export-game">
-        <span>✉</span> COPY ALLIANCE MAIL FORMAT
+        <span>✉</span> COPY FOR ALLIANCE ANNOUNCEMENT
       </button>
     </div>
 
@@ -1762,7 +1762,7 @@
       }
     }
 
-    // 8. EXPORT (ALLIANCE MAIL FORMAT)
+    // 8. EXPORT (ALLIANCE ANNOUNCEMENT)
     function copyCurrentSchedule() {
       const getVal = (slotId, selectId, defaultFallback) => {
         if (isR45 && selectId) {
@@ -1792,6 +1792,7 @@
         : getVal("slot-sun-vip-pill", "select-sun-vip", "Driver's Choice");
 
       const text = `[ALLIANCE TRAIN ROSTER - ${activeWeekType} WEEK]\n` +
+        
         `MON: Cond: ${monC} / VIP: ${monV}\n` +
         `TUE: Cond: ${tueC} / VIP: ${tueV}\n` +
         `WED: Cond: ${wedC} / VIP: ${wedV}\n` +
@@ -1799,10 +1800,11 @@
         `FRI: Cond: ${friC} / VIP: ${friV}\n` +
         `SAT: Cond: ${satC} / VIP: ${satV}\n` +
         `SUN: Cond: ${sunC} / VIP: ${sunV}\n` +
-        `Official schedule. Be on time for station platform departure!`;
+        
+        `Train schedule. Be on time for departure!`;
 
       navigator.clipboard.writeText(text).then(() => {
-        alert("Schedule copied to clipboard in Alliance Mail format!");
+        alert("Schedule copied to clipboard for Alliance Announcement!");
       });
     }
 
