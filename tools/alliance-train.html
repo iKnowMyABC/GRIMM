@@ -461,14 +461,16 @@
       word-break: break-word;
     }
 
+    /* CONDUCTOR SLOT: TRANSPARENT BACKGROUND FOR HIGH LEGIBILITY */
     .slot-display.conductor-slot {
-      background: rgba(192, 57, 43, 0.15);
+      background: transparent;
       border: 1px solid var(--conductor-crimson);
       color: var(--conductor-bright);
     }
 
+    /* VIP SLOT: TRANSPARENT BACKGROUND FOR HIGH LEGIBILITY */
     .slot-display.vip-slot {
-      background: rgba(243, 156, 18, 0.15);
+      background: transparent;
       border: 1px solid var(--vip-gold);
       color: var(--vip-gold-light);
     }
@@ -1022,11 +1024,11 @@
               <span class="criteria-sub">Chosen for <strong>Special Merits</strong> (DE help, battle participation; decided by R4)</span>
             </td>
             <td>
-              <div class="slot-display vip-slot view-only-pill" id="slot-wed-vip">--- STANDBY ---</div>
+              <div class="slot-display vip-slot view-only-pill" id="slot-wed-vip">Driver's Choice</div>
               <select class="editable-select r45-select" id="select-wed-vip">
-                <option value="">-- VIP's Choice --</option>
+                <option value="">-- Driver's Choice --</option>
               </select>
-              <span class="criteria-sub"><strong>VIP's choice</strong> (Decided independently)</span>
+              <span class="criteria-sub"><strong>Driver's choice</strong> (Decided independently)</span>
             </td>
           </tr>
 
@@ -1051,11 +1053,11 @@
               <span class="criteria-sub">Random selection from the <strong>entire alliance (excluding R4)</strong></span>
             </td>
             <td>
-              <div class="slot-display vip-slot view-only-pill" id="slot-fri-vip">--- STANDBY ---</div>
+              <div class="slot-display vip-slot view-only-pill" id="slot-fri-vip">Driver's Choice</div>
               <select class="editable-select r45-select" id="select-fri-vip">
-                <option value="">-- VIP's Choice --</option>
+                <option value="">-- Driver's Choice --</option>
               </select>
-              <span class="criteria-sub"><strong>VIP's choice</strong> (Decided independently)</span>
+              <span class="criteria-sub"><strong>Driver's choice</strong> (Decided independently)</span>
             </td>
           </tr>
 
@@ -1206,8 +1208,8 @@
 
     function refreshAllDropdowns() {
       populateDropdown(document.getElementById("select-wed-cond"), undefined, "Merited Member", document.getElementById("slot-wed-cond"));
-      populateDropdown(document.getElementById("select-wed-vip"), undefined, "VIP's Choice", document.getElementById("slot-wed-vip"));
-      populateDropdown(document.getElementById("select-fri-vip"), undefined, "VIP's Choice", document.getElementById("slot-fri-vip"));
+      populateDropdown(document.getElementById("select-wed-vip"), undefined, "Driver's Choice", document.getElementById("slot-wed-vip"));
+      populateDropdown(document.getElementById("select-fri-vip"), undefined, "Driver's Choice", document.getElementById("slot-fri-vip"));
       const sunSelect = document.getElementById("select-sun-vip");
       if (sunSelect) populateDropdown(sunSelect, undefined, "Driver's Choice", document.getElementById("slot-sun-vip-pill"));
     }
@@ -1297,7 +1299,7 @@
       populateDropdown(
         document.getElementById("select-wed-vip"),
         item.wednesday ? item.wednesday.vip : "",
-        "VIP's Choice",
+        "Driver's Choice",
         document.getElementById("slot-wed-vip")
       );
 
@@ -1308,7 +1310,7 @@
       populateDropdown(
         document.getElementById("select-fri-vip"),
         item.friday ? item.friday.vip : "",
-        "VIP's Choice",
+        "Driver's Choice",
         document.getElementById("slot-fri-vip")
       );
 
@@ -1584,8 +1586,8 @@
       if (!isR45 || !stagedDraft) return;
 
       const wedCondVal = document.getElementById("select-wed-cond").value || "Merited Member";
-      const wedVipVal = document.getElementById("select-wed-vip").value || "VIP's Choice";
-      const friVipVal = document.getElementById("select-fri-vip").value || "VIP's Choice";
+      const wedVipVal = document.getElementById("select-wed-vip").value || "Driver's Choice";
+      const friVipVal = document.getElementById("select-fri-vip").value || "Driver's Choice";
 
       let sunVipVal = stagedDraft.sunday.vip;
       if (activeWeekType === "ODD") {
@@ -1776,11 +1778,11 @@
       const tueC = getVal("slot-tue-cond", null, "---");
       const tueV = getVal("slot-tue-vip", null, "---");
       const wedC = getVal("slot-wed-cond", "select-wed-cond", "Merited Member");
-      const wedV = getVal("slot-wed-vip", "select-wed-vip", "VIP's Choice");
+      const wedV = getVal("slot-wed-vip", "select-wed-vip", "Driver's Choice");
       const thuC = getVal("slot-thu-cond", null, "---");
       const thuV = getVal("slot-thu-vip", null, "---");
       const friC = getVal("slot-fri-cond", null, "---");
-      const friV = getVal("slot-fri-vip", "select-fri-vip", "VIP's Choice");
+      const friV = getVal("slot-fri-vip", "select-fri-vip", "Driver's Choice");
 
       const satC = getVal("slot-sat-cond", null, "---");
       const satV = getVal("slot-sat-vip", null, "---");
@@ -1829,10 +1831,10 @@
       document.getElementById("slot-wed-cond").innerText = e.target.value || "Merited Member";
     });
     document.getElementById("select-wed-vip").addEventListener("change", (e) => {
-      document.getElementById("slot-wed-vip").innerText = e.target.value || "VIP's Choice";
+      document.getElementById("slot-wed-vip").innerText = e.target.value || "Driver's Choice";
     });
     document.getElementById("select-fri-vip").addEventListener("change", (e) => {
-      document.getElementById("slot-fri-vip").innerText = e.target.value || "VIP's Choice";
+      document.getElementById("slot-fri-vip").innerText = e.target.value || "Driver's Choice";
     });
 
     // INITIALIZATION
