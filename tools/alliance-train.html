@@ -461,6 +461,35 @@
       word-break: break-word;
     }
 
+    /* Arrow indicator on slots that can be tapped to pick a member */
+    body.r45-mode .clickable-slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      border-style: dashed !important;
+      transition: all 0.2s ease;
+    }
+
+    body.r45-mode .clickable-slot::after {
+      content: "▾";
+      font-size: 11px;
+      opacity: 0.7;
+      transform: translateY(-1px);
+      margin-left: 4px;
+    }
+
+    body.r45-mode .clickable-slot:hover {
+      background: rgba(120, 180, 232, 0.12) !important;
+      border-color: var(--frost-bright) !important;
+    }
+
+    body.r45-mode .clickable-slot:hover::after {
+      opacity: 1;
+      color: #ffffff;
+    }
+
     /* CONDUCTOR SLOT: TRANSPARENT BACKGROUND FOR HIGH LEGIBILITY */
     .slot-display.conductor-slot {
       background: transparent;
