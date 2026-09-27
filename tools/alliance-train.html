@@ -866,6 +866,19 @@
         grid-template-columns: 1fr;
       }
     }
+    
+      /* Clickable slot indicator when logged in as R4/5 */
+      body.r45-mode .clickable-slot {
+        cursor: pointer;
+        border-style: dashed !important;
+        transition: all 0.2s ease;
+      }
+
+      body.r45-mode .clickable-slot:hover {
+        background: rgba(120, 180, 232, 0.12) !important;
+        border-color: var(--frost-bright) !important;
+      }
+    
   </style>
 </head>
 <body>
@@ -1017,17 +1030,11 @@
           <tr>
             <td class="day-cell">Wednesday</td>
             <td>
-              <div class="slot-display conductor-slot view-only-pill" id="slot-wed-cond">--- STANDBY ---</div>
-              <select class="editable-select r45-select" id="select-wed-cond">
-                <option value="">-- Merited Member --</option>
-              </select>
+              <div class="slot-display conductor-slot clickable-slot" id="slot-wed-cond">--- Merited Member ---</div>
               <span class="criteria-sub">Chosen for <strong>Special Merits</strong> (DE help, battle participation; decided by R4)</span>
             </td>
             <td>
-              <div class="slot-display vip-slot view-only-pill" id="slot-wed-vip">Driver's Choice</div>
-              <select class="editable-select r45-select" id="select-wed-vip">
-                <option value="">-- Driver's Choice --</option>
-              </select>
+              <div class="slot-display vip-slot clickable-slot" id="slot-wed-vip">Driver's Choice</div>
               <span class="criteria-sub"><strong>Driver's choice</strong> (Decided independently)</span>
             </td>
           </tr>
@@ -1050,13 +1057,10 @@
             <td class="day-cell">Friday</td>
             <td>
               <div class="slot-display conductor-slot" id="slot-fri-cond">--- STANDBY ---</div>
-              <span class="criteria-sub">Random selection from the <strong>entire alliance (excluding R4/5)</strong></span>
+              <span class="criteria-sub">Random selection from the <strong>entire alliance (excluding R4 &amp; R5)</strong></span>
             </td>
             <td>
-              <div class="slot-display vip-slot view-only-pill" id="slot-fri-vip">Driver's Choice</div>
-              <select class="editable-select r45-select" id="select-fri-vip">
-                <option value="">-- Driver's Choice --</option>
-              </select>
+              <div class="slot-display vip-slot clickable-slot" id="slot-fri-vip">Driver's Choice</div>
               <span class="criteria-sub"><strong>Driver's choice</strong> (Decided independently)</span>
             </td>
           </tr>
@@ -1088,6 +1092,7 @@
               <span class="criteria-sub" id="sub-sun-vip">Strict In-Order R4 VIP Queue</span>
             </td>
           </tr>
+          
         </tbody>
       </table>
     </div>
@@ -1436,14 +1441,13 @@
       } else {
         document.getElementById("slot-sun-cond").innerText = "R4 (Rotating)";
         subSunCond.innerText = "Strict In-Order R4 Conductor Queue";
-        sunVipWrapper.innerHTML = `
-          <div class="slot-display vip-slot view-only-pill" id="slot-sun-vip-pill">Driver's Choice</div>
-          <select class="editable-select r45-select" id="select-sun-vip"><option value="">-- Driver's Choice --</option></select>
-        `;
-        populateDropdown(document.getElementById("select-sun-vip"), undefined, "Driver's Choice", document.getElementById("slot-sun-vip-pill"));
+        sunVipWrapper.innerHTML = `<div class="slot-display vip-slot clickable-slot" id="slot-sun-vip">Driver's Choice</div>`;
         subSunVip.innerText = "Driver's choice (Decided independently)";
+
+        document.getElementById("slot-sun-vip").addEventListener("click", () => {
+          openSingleSlotPicker("slot-sun-vip", "Sunday Driver's Choice");
+        });
       }
-      updateAuthUI();
     }
 
     // MODAL
@@ -1466,6 +1470,8 @@
     function closePoolModal() {
       document.getElementById("pool-modal").classList.remove("active");
       currentEditingPool = null;
+      activeSingleSlotTarget = null;
+      document.getElementById("btn-modal-save").style.display = "inline-block";
       initCounts();
     }
 
@@ -1480,18 +1486,51 @@
       const matches = ALLIANCE_ROSTER.filter(n => n.toLowerCase().includes(query));
 
       matches.forEach(name => {
-        const isChecked = poolsData[currentEditingPool].includes(name);
-        const row = document.createElement("label");
+        const row = document.createElement("div");
         row.className = "roster-pick-row";
-        row.innerHTML = `
-          <input type="checkbox" ${isChecked ? "checked" : ""} />
-          <span>${name}</span>
-        `;
-        row.querySelector("input").addEventListener("change", (e) => {
-          togglePoolMember(name, e.target.checked);
-        });
+
+        if (activeSingleSlotTarget) {
+          // Single-select mode: 1 tap assigns the member and closes
+          row.style.cursor = "pointer";
+          row.innerHTML = `<span style="font-weight: 600; color: var(--ice); font-size: 13px;">${name}</span>`;
+          row.addEventListener("click", () => {
+            selectSingleSlotMember(name);
+          });
+        } else {
+          // Multi-select pool mode (VS, DS, Donors)
+          const isChecked = poolsData[currentEditingPool] && poolsData[currentEditingPool].includes(name);
+          row.innerHTML = `
+            <input type="checkbox" ${isChecked ? "checked" : ""} />
+            <span>${name}</span>
+          `;
+          row.querySelector("input").addEventListener("change", (e) => {
+            togglePoolMember(name, e.target.checked);
+          });
+        }
         container.appendChild(row);
       });
+    }
+
+    function openSingleSlotPicker(targetElementId, title) {
+      if (!isR45) return;
+      activeSingleSlotTarget = targetElementId;
+      currentEditingPool = null;
+
+      document.getElementById("modal-pool-title").innerText = `SELECT: ${title}`;
+      document.getElementById("modal-search-input").value = "";
+      document.getElementById("modal-selected-count").innerText = "Tap any member to assign";
+      document.getElementById("btn-modal-save").style.display = "none"; // Hide save button for single tap
+      document.getElementById("pool-modal").classList.add("active");
+      renderModalRoster("");
+      setTimeout(() => document.getElementById("modal-search-input").focus(), 100);
+    }
+
+    function selectSingleSlotMember(name) {
+      if (activeSingleSlotTarget) {
+        const targetEl = document.getElementById(activeSingleSlotTarget);
+        if (targetEl) targetEl.innerText = name;
+      }
+      closePoolModal();
     }
 
     function togglePoolMember(name, add) {
@@ -1845,8 +1884,30 @@
     document.getElementById("btn-modal-close").addEventListener("click", closePoolModal);
     document.getElementById("btn-modal-save").addEventListener("click", closePoolModal);
     document.getElementById("modal-search-input").addEventListener("input", filterModalRoster);
+    
+    // Close modal when clicking outside it (properly closed with });)
     document.getElementById("pool-modal").addEventListener("click", (e) => {
       if (e.target.id === "pool-modal") closePoolModal();
+    });
+
+    // --- Manual Slot Picker Click Listeners ---
+    document.getElementById("slot-wed-cond")?.addEventListener("click", () => {
+      openSingleSlotPicker("slot-wed-cond", "Wednesday Merited Member");
+    });
+
+    document.getElementById("slot-wed-vip")?.addEventListener("click", () => {
+      openSingleSlotPicker("slot-wed-vip", "Wednesday Driver's Choice");
+    });
+
+    document.getElementById("slot-fri-vip")?.addEventListener("click", () => {
+      openSingleSlotPicker("slot-fri-vip", "Friday Driver's Choice");
+    });
+    
+    // Sunday VIP picker: only editable during ODD weeks (Driver's Choice)
+    document.getElementById("slot-sun-vip")?.addEventListener("click", () => {
+      if (selectedWeekType === "ODD") {
+        openSingleSlotPicker("slot-sun-vip", "Sunday Driver's Choice");
+      }
     });
 
     // Sync pill text in real time whenever an R4/5 changes a dropdown
