@@ -1224,9 +1224,30 @@
         const r5El = doc.querySelector(".r5-name");
         if (r5El) R5_LEADER = r5El.innerText.trim();
 
-        R4_ROSTER = Array.from(doc.querySelectorAll(".r4-grid .r4-card"))
+        // 1. Fixed R4 Rotation Sequence (excluding Mouse)
+        const PREFERRED_R4_ORDER = [
+          "Kristy",
+          "Yuki",
+          "Umenployed",
+          "JP",
+          "Johnno",
+          "NurmiTj",
+          "ABC",
+          "Ovsi",
+          "York",
+          "Jedi"
+        ];
+
+        // 2. Read live cards from index.html (excluding R5)
+        const liveR4Cards = Array.from(doc.querySelectorAll(".r4-grid .r4-card"))
           .map(card => card.innerText.trim())
-          .filter(name => name.length > 0);
+          .filter(name => name.length > 0 && name !== R5_LEADER);
+
+        // 3. Keep established sequence, omit anyone removed, append newcomers to end
+        const activeOrdered = PREFERRED_R4_ORDER.filter(name => liveR4Cards.includes(name));
+        const extraR4s = liveR4Cards.filter(name => !PREFERRED_R4_ORDER.includes(name));
+
+        R4_ROSTER = [...activeOrdered, ...extraR4s];
 
         const memberNames = Array.from(doc.querySelectorAll(".members-grid div"))
           .map(div => div.innerText.trim())
