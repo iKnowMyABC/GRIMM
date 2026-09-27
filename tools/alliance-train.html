@@ -1135,6 +1135,7 @@
 
   <!-- FIREBASE ESM SCRIPTS -->
   <script type="module">
+    let activeSingleSlotTarget = null; // Defined globally to prevent ReferenceErrors
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
     import { 
       getDatabase, 
@@ -1179,45 +1180,9 @@
     let r4VipIndex = 0;
     let scheduleHistory = [];
 
-    let isR45 = sessionStorage.getItem("grimm_r45_auth") === "true";
+    // Persistent login across browser tabs & hard refreshes
+    let isR45 = localStorage.getItem("grimm_r45_auth") === "true";
     let currentEditingPool = null;
-
-    // Helper: Populates dropdown and keeps text pill synced
-    function populateDropdown(selectEl, selectedVal, defaultLabel, pillEl) {
-      if (!selectEl) return;
-      const cur = selectedVal !== undefined ? selectedVal : selectEl.value;
-      selectEl.innerHTML = "";
-
-      const defaultOpt = document.createElement("option");
-      defaultOpt.value = "";
-      defaultOpt.textContent = `-- ${defaultLabel} --`;
-      selectEl.appendChild(defaultOpt);
-
-      ALLIANCE_ROSTER.forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        selectEl.appendChild(opt);
-      });
-
-      if (cur && !ALLIANCE_ROSTER.includes(cur)) {
-        const extraOpt = document.createElement("option");
-        extraOpt.value = cur;
-        extraOpt.textContent = cur;
-        selectEl.appendChild(extraOpt);
-      }
-
-      if (cur) selectEl.value = cur;
-      if (pillEl) pillEl.innerText = cur || defaultLabel;
-    }
-
-    function refreshAllDropdowns() {
-      populateDropdown(document.getElementById("select-wed-cond"), undefined, "Merited Member", document.getElementById("slot-wed-cond"));
-      populateDropdown(document.getElementById("select-wed-vip"), undefined, "Driver's Choice", document.getElementById("slot-wed-vip"));
-      populateDropdown(document.getElementById("select-fri-vip"), undefined, "Driver's Choice", document.getElementById("slot-fri-vip"));
-      const sunSelect = document.getElementById("select-sun-vip");
-      if (sunSelect) populateDropdown(sunSelect, undefined, "Driver's Choice", document.getElementById("slot-sun-vip-pill"));
-    }
 
     async function syncRosterFromHomepage() {
       try {
@@ -1248,7 +1213,7 @@
           .map(card => card.innerText.trim())
           .filter(name => name.length > 0 && name !== R5_LEADER);
 
-        // 3. Keep established sequence, omit anyone removed, append newcomers to end
+        // 3. Keep sequence, drop removed officers, append new recruits to tail
         const activeOrdered = PREFERRED_R4_ORDER.filter(name => liveR4Cards.includes(name));
         const extraR4s = liveR4Cards.filter(name => !PREFERRED_R4_ORDER.includes(name));
 
@@ -1266,7 +1231,6 @@
         poolsData.donors = ALLIANCE_ROSTER.slice(1, 11);
 
         initCounts();
-        refreshAllDropdowns();
       } catch (err) {
         console.warn("Homepage sync fallback triggered:", err);
       }
@@ -1280,11 +1244,17 @@
           activeWeekType = data.weekType || "EVEN";
           setWeekType(activeWeekType);
           renderScheduleToDOM(data);
-          document.getElementById("label-schedule-state").innerText = `OFFICIAL LINEUP (${data.timestamp || 'ACTIVE'})`;
-          document.getElementById("label-schedule-state").style.color = "var(--success-green)";
+          const stateLabel = document.getElementById("label-schedule-state");
+          if (stateLabel) {
+            stateLabel.innerText = `OFFICIAL LINEUP (${data.timestamp || 'ACTIVE'})`;
+            stateLabel.style.color = "var(--success-green)";
+          }
         } else {
-          document.getElementById("label-schedule-state").innerText = "NO ACTIVE LINEUP LOGGED";
-          document.getElementById("label-schedule-state").style.color = "var(--steel-dim)";
+          const stateLabel = document.getElementById("label-schedule-state");
+          if (stateLabel) {
+            stateLabel.innerText = "NO ACTIVE LINEUP LOGGED";
+            stateLabel.style.color = "var(--steel-dim)";
+          }
         }
       });
 
@@ -1316,43 +1286,21 @@
       document.getElementById("slot-tue-cond").innerText = item.tuesday.cond || "---";
       document.getElementById("slot-tue-vip").innerText = item.tuesday.vip || "---";
 
-      populateDropdown(
-        document.getElementById("select-wed-cond"),
-        item.wednesday ? item.wednesday.cond : "",
-        "Merited Member",
-        document.getElementById("slot-wed-cond")
-      );
-      populateDropdown(
-        document.getElementById("select-wed-vip"),
-        item.wednesday ? item.wednesday.vip : "",
-        "Driver's Choice",
-        document.getElementById("slot-wed-vip")
-      );
+      document.getElementById("slot-wed-cond").innerText = (item.wednesday && item.wednesday.cond) ? item.wednesday.cond : "--- Merited Member ---";
+      document.getElementById("slot-wed-vip").innerText = (item.wednesday && item.wednesday.vip) ? item.wednesday.vip : "Driver's Choice";
 
       document.getElementById("slot-thu-cond").innerText = item.thursday.cond || "---";
       document.getElementById("slot-thu-vip").innerText = item.thursday.vip || "---";
       document.getElementById("slot-fri-cond").innerText = item.friday.cond || "---";
-
-      populateDropdown(
-        document.getElementById("select-fri-vip"),
-        item.friday ? item.friday.vip : "",
-        "Driver's Choice",
-        document.getElementById("slot-fri-vip")
-      );
+      document.getElementById("slot-fri-vip").innerText = (item.friday && item.friday.vip) ? item.friday.vip : "Driver's Choice";
 
       document.getElementById("slot-sat-cond").innerText = item.saturday.cond || "---";
       document.getElementById("slot-sat-vip").innerText = item.saturday.vip || "---";
       document.getElementById("slot-sun-cond").innerText = item.sunday.cond || "---";
 
-      if (activeWeekType === "EVEN") {
-        const slotSun = document.getElementById("slot-sun-vip");
-        if (slotSun) slotSun.innerText = item.sunday.vip || "---";
-      } else {
-        const selectSun = document.getElementById("select-sun-vip");
-        const pillSun = document.getElementById("slot-sun-vip-pill");
-        if (selectSun) {
-          populateDropdown(selectSun, item.sunday ? item.sunday.vip : "", "Driver's Choice", pillSun);
-        }
+      const slotSun = document.getElementById("slot-sun-vip");
+      if (slotSun) {
+        slotSun.innerText = item.sunday.vip || (activeWeekType === "EVEN" ? "R4 (Rotating)" : "Driver's Choice");
       }
     }
 
@@ -1386,7 +1334,7 @@
     async function toggleR45Auth() {
       if (isR45) {
         isR45 = false;
-        sessionStorage.removeItem("grimm_r45_auth");
+        localStorage.removeItem("grimm_r45_auth");
         updateAuthUI();
       } else {
         const key = prompt("ᚦ ENTER R4 / R5 WAR COUNCIL KEY:");
@@ -1397,7 +1345,7 @@
           const snapshot = await get(ref(db, `alliance_train_keys/${cleanKey}`));
           if (snapshot.exists() || cleanKey === "GRMMGRMM") {
             isR45 = true;
-            sessionStorage.setItem("grimm_r45_auth", "true");
+            localStorage.setItem("grimm_r45_auth", "true");
             updateAuthUI();
           } else {
             alert("Access denied. The runes remain silent.");
@@ -1405,7 +1353,7 @@
         } catch (err) {
           if (cleanKey === "GRMMGRMM") {
             isR45 = true;
-            sessionStorage.setItem("grimm_r45_auth", "true");
+            localStorage.setItem("grimm_r45_auth", "true");
             updateAuthUI();
           } else {
             alert("Access denied.");
@@ -1443,17 +1391,15 @@
         subSunCond.innerText = "Strict In-Order R4 Conductor Queue";
         sunVipWrapper.innerHTML = `<div class="slot-display vip-slot clickable-slot" id="slot-sun-vip">Driver's Choice</div>`;
         subSunVip.innerText = "Driver's choice (Decided independently)";
-
-        document.getElementById("slot-sun-vip").addEventListener("click", () => {
-          openSingleSlotPicker("slot-sun-vip", "Sunday Driver's Choice");
-        });
       }
     }
 
-    // MODAL
+    // MODAL HANDLERS
     function openPoolPicker(poolKey) {
       if (!isR45) return;
       currentEditingPool = poolKey;
+      activeSingleSlotTarget = null;
+
       const titles = {
         vs: "Top 15 VS Candidates",
         ds: "Desert Storm (DS) Roster",
@@ -1462,9 +1408,11 @@
       };
       document.getElementById("modal-pool-title").innerText = titles[poolKey];
       document.getElementById("modal-search-input").value = "";
+      document.getElementById("btn-modal-save").style.display = "inline-block";
       document.getElementById("pool-modal").classList.add("active");
       renderModalRoster("");
       updateModalCount();
+      setTimeout(() => document.getElementById("modal-search-input").focus(), 80);
     }
 
     function closePoolModal() {
@@ -1485,12 +1433,17 @@
       container.innerHTML = "";
       const matches = ALLIANCE_ROSTER.filter(n => n.toLowerCase().includes(query));
 
+      if (matches.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--steel-dim); padding: 18px; font-size: 11px;">No matching members found</div>`;
+        return;
+      }
+
       matches.forEach(name => {
         const row = document.createElement("div");
         row.className = "roster-pick-row";
 
         if (activeSingleSlotTarget) {
-          // Single-select mode: 1 tap assigns the member and closes
+          // Single-select mode: 1 tap assigns member and closes
           row.style.cursor = "pointer";
           row.innerHTML = `<span style="font-weight: 600; color: var(--ice); font-size: 13px;">${name}</span>`;
           row.addEventListener("click", () => {
@@ -1499,12 +1452,20 @@
         } else {
           // Multi-select pool mode (VS, DS, Donors)
           const isChecked = poolsData[currentEditingPool] && poolsData[currentEditingPool].includes(name);
+          row.style.cursor = "pointer";
           row.innerHTML = `
-            <input type="checkbox" ${isChecked ? "checked" : ""} />
-            <span>${name}</span>
+            <input type="checkbox" ${isChecked ? "checked" : ""} style="cursor: pointer;" />
+            <span style="font-weight: ${isChecked ? '700' : '400'}; color: ${isChecked ? 'var(--vip-gold-light)' : 'var(--white)'};">${name}</span>
           `;
-          row.querySelector("input").addEventListener("change", (e) => {
-            togglePoolMember(name, e.target.checked);
+          
+          const checkbox = row.querySelector("input");
+          row.addEventListener("click", (e) => {
+            if (e.target !== checkbox) {
+              checkbox.checked = !checkbox.checked;
+            }
+            togglePoolMember(name, checkbox.checked);
+            row.querySelector("span").style.color = checkbox.checked ? 'var(--vip-gold-light)' : 'var(--white)';
+            row.querySelector("span").style.fontWeight = checkbox.checked ? '700' : '400';
           });
         }
         container.appendChild(row);
@@ -1519,10 +1480,10 @@
       document.getElementById("modal-pool-title").innerText = `SELECT: ${title}`;
       document.getElementById("modal-search-input").value = "";
       document.getElementById("modal-selected-count").innerText = "Tap any member to assign";
-      document.getElementById("btn-modal-save").style.display = "none"; // Hide save button for single tap
+      document.getElementById("btn-modal-save").style.display = "none";
       document.getElementById("pool-modal").classList.add("active");
       renderModalRoster("");
-      setTimeout(() => document.getElementById("modal-search-input").focus(), 100);
+      setTimeout(() => document.getElementById("modal-search-input").focus(), 80);
     }
 
     function selectSingleSlotMember(name) {
@@ -1545,7 +1506,7 @@
 
     function updateModalCount() {
       if (!currentEditingPool) return;
-      document.getElementById("modal-selected-count").innerText = `${poolsData[currentEditingPool].length} Members in Pool`;
+      document.getElementById("modal-selected-count").innerText = `${poolsData[currentEditingPool].length} Members Selected`;
     }
 
     function peekNextR4Cond(offset = 0) {
@@ -1622,9 +1583,8 @@
       document.getElementById("slot-sat-vip").innerText = satVipVal;
       document.getElementById("slot-sun-cond").innerText = sunCondVal;
 
-      if (activeWeekType === "EVEN") {
-        document.getElementById("slot-sun-vip").innerText = sunVipVal;
-      }
+      const slotSun = document.getElementById("slot-sun-vip");
+      if (slotSun) slotSun.innerText = sunVipVal;
 
       stagedDraft = {
         weekType: activeWeekType,
@@ -1637,23 +1597,21 @@
       };
 
       document.getElementById("staging-banner").classList.add("active");
-      document.getElementById("label-schedule-state").innerText = "DRAFT IN STAGING (NOT COMMITTED)";
-      document.getElementById("label-schedule-state").style.color = "var(--fire-light)";
+      const stateLabel = document.getElementById("label-schedule-state");
+      if (stateLabel) {
+        stateLabel.innerText = "DRAFT IN STAGING (NOT COMMITTED)";
+        stateLabel.style.color = "var(--fire-light)";
+      }
     }
 
     // 6. CONFIRM & PUBLISH TO FIREBASE
     async function confirmWeeklySchedule() {
       if (!isR45 || !stagedDraft) return;
 
-      const wedCondVal = document.getElementById("select-wed-cond").value || "Merited Member";
-      const wedVipVal = document.getElementById("select-wed-vip").value || "Driver's Choice";
-      const friVipVal = document.getElementById("select-fri-vip").value || "Driver's Choice";
-
-      let sunVipVal = stagedDraft.sunday.vip;
-      if (activeWeekType === "ODD") {
-        const selectSun = document.getElementById("select-sun-vip");
-        sunVipVal = (selectSun && selectSun.value) ? selectSun.value : "Driver's Choice";
-      }
+      const wedCondVal = document.getElementById("slot-wed-cond").innerText.trim();
+      const wedVipVal = document.getElementById("slot-wed-vip").innerText.trim();
+      const friVipVal = document.getElementById("slot-fri-vip").innerText.trim();
+      const sunVipVal = document.getElementById("slot-sun-vip") ? document.getElementById("slot-sun-vip").innerText.trim() : "Driver's Choice";
 
       const now = new Date();
       const timeStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1824,43 +1782,35 @@
 
     // 8. EXPORT (ALLIANCE ANNOUNCEMENT)
     function copyCurrentSchedule() {
-      const getVal = (slotId, selectId, defaultFallback) => {
-        if (isR45 && selectId) {
-          const el = document.getElementById(selectId);
-          if (el && el.value) return el.value;
-        }
+      const getVal = (slotId, defaultFallback) => {
         const el = document.getElementById(slotId);
         return (el && el.innerText.trim()) ? el.innerText.trim() : defaultFallback;
       };
 
-      const monC = getVal("slot-mon-cond", null, "---");
-      const monV = getVal("slot-mon-vip", null, "---");
-      const tueC = getVal("slot-tue-cond", null, "---");
-      const tueV = getVal("slot-tue-vip", null, "---");
-      const wedC = getVal("slot-wed-cond", "select-wed-cond", "Merited Member");
-      const wedV = getVal("slot-wed-vip", "select-wed-vip", "Driver's Choice");
-      const thuC = getVal("slot-thu-cond", null, "---");
-      const thuV = getVal("slot-thu-vip", null, "---");
-      const friC = getVal("slot-fri-cond", null, "---");
-      const friV = getVal("slot-fri-vip", "select-fri-vip", "Driver's Choice");
+      const monC = getVal("slot-mon-cond", "---");
+      const monV = getVal("slot-mon-vip", "---");
+      const tueC = getVal("slot-tue-cond", "---");
+      const tueV = getVal("slot-tue-vip", "---");
+      const wedC = getVal("slot-wed-cond", "Merited Member");
+      const wedV = getVal("slot-wed-vip", "Driver's Choice");
+      const thuC = getVal("slot-thu-cond", "---");
+      const thuV = getVal("slot-thu-vip", "---");
+      const friC = getVal("slot-fri-cond", "---");
+      const friV = getVal("slot-fri-vip", "Driver's Choice");
 
-      const satC = getVal("slot-sat-cond", null, "---");
-      const satV = getVal("slot-sat-vip", null, "---");
-      const sunC = getVal("slot-sun-cond", null, "---");
-      const sunV = (activeWeekType === "EVEN") 
-        ? getVal("slot-sun-vip", null, "---") 
-        : getVal("slot-sun-vip-pill", "select-sun-vip", "Driver's Choice");
+      const satC = getVal("slot-sat-cond", "---");
+      const satV = getVal("slot-sat-vip", "---");
+      const sunC = getVal("slot-sun-cond", "---");
+      const sunV = getVal("slot-sun-vip", "---");
 
       const text = `[ALLIANCE TRAIN ROSTER - ${activeWeekType} WEEK]\n` +
-        
         `MON: Cond: ${monC} / VIP: ${monV}\n` +
         `TUE: Cond: ${tueC} / VIP: ${tueV}\n` +
         `WED: Cond: ${wedC} / VIP: ${wedV}\n` +
         `THU: Cond: ${thuC} / VIP: ${thuV}\n` +
         `FRI: Cond: ${friC} / VIP: ${friV}\n` +
         `SAT: Cond: ${satC} / VIP: ${satV}\n` +
-        `SUN: Cond: ${sunC} / VIP: ${sunV}\n` +
-        
+        `SUN: Cond: ${sunC} / VIP: ${sunV}\n\n` +
         `Train schedule. Be on time for departure!`;
 
       navigator.clipboard.writeText(text).then(() => {
@@ -1885,40 +1835,26 @@
     document.getElementById("btn-modal-save").addEventListener("click", closePoolModal);
     document.getElementById("modal-search-input").addEventListener("input", filterModalRoster);
     
-    // Close modal when clicking outside it (properly closed with });)
+    // Close modal when clicking outside it
     document.getElementById("pool-modal").addEventListener("click", (e) => {
       if (e.target.id === "pool-modal") closePoolModal();
     });
 
-    // --- Manual Slot Picker Click Listeners ---
-    document.getElementById("slot-wed-cond")?.addEventListener("click", () => {
-      openSingleSlotPicker("slot-wed-cond", "Wednesday Merited Member");
-    });
+    // Delegated click handler: intercepts clicks on editable slots reliably across re-renders
+    document.addEventListener("click", (e) => {
+      if (!isR45) return;
+      const target = e.target.closest(".clickable-slot");
+      if (!target) return;
 
-    document.getElementById("slot-wed-vip")?.addEventListener("click", () => {
-      openSingleSlotPicker("slot-wed-vip", "Wednesday Driver's Choice");
-    });
-
-    document.getElementById("slot-fri-vip")?.addEventListener("click", () => {
-      openSingleSlotPicker("slot-fri-vip", "Friday Driver's Choice");
-    });
-    
-    // Sunday VIP picker: only editable during ODD weeks (Driver's Choice)
-    document.getElementById("slot-sun-vip")?.addEventListener("click", () => {
-      if (selectedWeekType === "ODD") {
+      if (target.id === "slot-wed-cond") {
+        openSingleSlotPicker("slot-wed-cond", "Wednesday Merited Member");
+      } else if (target.id === "slot-wed-vip") {
+        openSingleSlotPicker("slot-wed-vip", "Wednesday Driver's Choice");
+      } else if (target.id === "slot-fri-vip") {
+        openSingleSlotPicker("slot-fri-vip", "Friday Driver's Choice");
+      } else if (target.id === "slot-sun-vip" && activeWeekType === "ODD") {
         openSingleSlotPicker("slot-sun-vip", "Sunday Driver's Choice");
       }
-    });
-
-    // Sync pill text in real time whenever an R4/5 changes a dropdown
-    document.getElementById("select-wed-cond").addEventListener("change", (e) => {
-      document.getElementById("slot-wed-cond").innerText = e.target.value || "Merited Member";
-    });
-    document.getElementById("select-wed-vip").addEventListener("change", (e) => {
-      document.getElementById("slot-wed-vip").innerText = e.target.value || "Driver's Choice";
-    });
-    document.getElementById("select-fri-vip").addEventListener("change", (e) => {
-      document.getElementById("slot-fri-vip").innerText = e.target.value || "Driver's Choice";
     });
 
     // INITIALIZATION
