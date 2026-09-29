@@ -188,13 +188,6 @@
     body.r45-mode .r45-only { display: flex !important; }
     body.r45-mode .r45-only-block { display: block !important; }
 
-    /* VIEW ONLY vs R4/5 TOGGLE FOR EDITABLE SLOTS */
-    .view-only-pill { display: inline-flex; }
-    .r45-select { display: none; }
-
-    body.r45-mode .view-only-pill { display: none !important; }
-    body.r45-mode .r45-select { display: inline-block !important; }
-
     .guest-badge {
       font-family: 'Cinzel', serif;
       font-size: 10px;
@@ -379,7 +372,7 @@
       min-height: 42px;
     }
 
-    /* SCHEDULE TABLE & RESPONSIVE CARDS */
+    /* SCHEDULE TABLE */
     .schedule-section-title {
       font-family: 'Cinzel', serif;
       font-size: 11px;
@@ -461,7 +454,6 @@
       word-break: break-word;
     }
 
-    /* Arrow indicator on slots that can be tapped to pick a member */
     body.r45-mode .clickable-slot {
       display: inline-flex;
       align-items: center;
@@ -490,38 +482,16 @@
       color: #ffffff;
     }
 
-    /* CONDUCTOR SLOT: TRANSPARENT BACKGROUND FOR HIGH LEGIBILITY */
     .slot-display.conductor-slot {
       background: transparent;
       border: 1px solid var(--conductor-crimson);
       color: var(--conductor-bright);
     }
 
-    /* VIP SLOT: TRANSPARENT BACKGROUND FOR HIGH LEGIBILITY */
     .slot-display.vip-slot {
       background: transparent;
       border: 1px solid var(--vip-gold);
       color: var(--vip-gold-light);
-    }
-
-    /* ROSTER SELECTION DROPDOWNS */
-    .editable-select {
-      background: rgba(7, 10, 14, 0.85);
-      border: 1px solid var(--frost-border);
-      color: var(--white);
-      padding: 8px 10px;
-      border-radius: 4px;
-      font-family: 'Cinzel', serif;
-      font-size: 11px;
-      width: 100%;
-      max-width: 220px;
-      outline: none;
-      min-height: 38px;
-      cursor: pointer;
-    }
-
-    .editable-select:focus {
-      border-color: var(--frost-bright);
     }
 
     /* EXPORT STRIP (R4/5 ONLY) */
@@ -876,12 +846,6 @@
         font-size: 12px;
       }
 
-      .editable-select {
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-
       .export-strip {
         flex-direction: column;
       }
@@ -895,19 +859,6 @@
         grid-template-columns: 1fr;
       }
     }
-    
-      /* Clickable slot indicator when logged in as R4/5 */
-      body.r45-mode .clickable-slot {
-        cursor: pointer;
-        border-style: dashed !important;
-        transition: all 0.2s ease;
-      }
-
-      body.r45-mode .clickable-slot:hover {
-        background: rgba(120, 180, 232, 0.12) !important;
-        border-color: var(--frost-bright) !important;
-      }
-    
   </style>
 </head>
 <body>
@@ -1164,7 +1115,7 @@
 
   <!-- FIREBASE ESM SCRIPTS -->
   <script type="module">
-    let activeSingleSlotTarget = null; // Defined globally to prevent ReferenceErrors
+    let activeSingleSlotTarget = null;
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
     import { 
       getDatabase, 
@@ -1296,6 +1247,7 @@
           const numericScore = parseFloat(rawScore.replace("*", "").replace(/,/g, "")) || 0;
 
           if (numericScore > 0) {
+            // Reconcile with homepage roster using case-insensitive match
             const matchedRosterName = ALLIANCE_ROSTER.find(
               member => member.toLowerCase().trim() === cleanedName.toLowerCase().trim()
             );
@@ -1320,6 +1272,69 @@
         }
       } catch (err) {
         console.warn("Google Sheet fetch failed or mid-week empty; falling back to homepage list:", err);
+      }
+      return null;
+    }
+
+    async function fetchDSFromGoogleSheet() {
+      const csvUrl = "https://docs.google.com/spreadsheets/d/1-ClSjz_eAU9WH-ll-h-kI8DQ7XBcLK9IU9bAujqUN2s/export?format=csv&gid=0";
+
+      try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) throw new Error("HTTP error " + response.status);
+        const text = await response.text();
+        const lines = text.split(/\r?\n/);
+
+        const qualifiedPlayers = [];
+
+        // Safety boundary: Needs to reach at least Column AB/BF
+        const REQUIRED_BOUNDARY = 57; // 27 for Column AB, 57 for Column BF
+
+        for (let i = 5; i < lines.length; i++) {
+          if (!lines[i]) continue;
+          const row = parseCSVLine(lines[i]);
+          if (row.length <= REQUIRED_BOUNDARY) continue;
+
+          const rawName = row[33] || ""; // 2 for Column C, 33 for Column AH
+          const cleanedName = cleanPlayerName(rawName);
+
+          if (!cleanedName || cleanedName.toLowerCase().includes("calibration") || cleanedName.toLowerCase().includes("total")) {
+            continue;
+          }
+
+          // Team A: Column Y (status) & Column Z (no-show check)
+          const teamA_Status = (row[54] || "").trim().toUpperCase(); // 24 for Column Y, 54 for Column BC
+          const teamA_Value  = (row[55] || "").trim().toUpperCase(); // 24 for Column Y, 55 for Column BD
+
+          // Team B: Column AA (status) & Column AB (no-show check)
+          const teamB_Status = (row[56] || "").trim().toUpperCase(); // 26 for Column AA, 56 for Column BE
+          const teamB_Value  = (row[57] || "").trim().toUpperCase(); // 27 for Column AB, 57 for Column BF
+
+          // Rule: Must be 'R' or 'S', and next column MUST NOT be 'X'
+          const validTeamA = (teamA_Status === "R" || teamA_Status === "S") && (teamA_Value !== "X");
+          const validTeamB = (teamB_Status === "R" || teamB_Status === "S") && (teamB_Value !== "X");
+
+          // Qualified if valid in either team
+          if (validTeamA || validTeamB) {
+            // Reconcile with ALLIANCE_ROSTER using case-insensitive check
+            const matchedRosterName = ALLIANCE_ROSTER.find(
+              member => member.toLowerCase().trim() === cleanedName.toLowerCase().trim()
+            );
+
+            const finalName = matchedRosterName || cleanedName;
+
+            if (!qualifiedPlayers.includes(finalName)) {
+              qualifiedPlayers.push(finalName);
+            }
+          }
+        }
+
+        if (qualifiedPlayers.length > 0) {
+          console.log("Successfully fetched DS Pool:", qualifiedPlayers);
+          return qualifiedPlayers;
+        }
+      } catch (err) {
+        console.warn("DS fetch error / fallback triggered:", err);
       }
       return null;
     }
@@ -1367,11 +1382,14 @@
 
         poolsData.r4 = [...R4_ROSTER];
 
-        // --- NEW: FETCH TOP 15 VS FROM GOOGLE SHEET (COLUMNS C & J) ---
+        // --- FETCH TOP 15 VS FROM GOOGLE SHEET (COLUMNS C & J) ---
         const sheetVS = await fetchTop15FromGoogleSheet();
         poolsData.vs = (sheetVS && sheetVS.length > 0) ? sheetVS : ALLIANCE_ROSTER.slice(1, 16);
 
-        poolsData.ds = ALLIANCE_ROSTER.slice(5, 25);
+        // --- FETCH DS PLAYERS FROM GOOGLE SHEET (COLUMNS Y, Z, AA, AB) ---
+        const sheetDS = await fetchDSFromGoogleSheet();
+        poolsData.ds = (sheetDS && sheetDS.length > 0) ? sheetDS : ALLIANCE_ROSTER.slice(5, 25);
+
         poolsData.donors = ALLIANCE_ROSTER.slice(1, 11);
 
         initCounts();
@@ -1587,14 +1605,12 @@
         row.className = "roster-pick-row";
 
         if (activeSingleSlotTarget) {
-          // Single-select mode: 1 tap assigns member and closes
           row.style.cursor = "pointer";
           row.innerHTML = `<span style="font-weight: 600; color: var(--ice); font-size: 13px;">${name}</span>`;
           row.addEventListener("click", () => {
             selectSingleSlotMember(name);
           });
         } else {
-          // Multi-select pool mode (VS, DS, Donors)
           const isChecked = poolsData[currentEditingPool] && poolsData[currentEditingPool].includes(name);
           row.style.cursor = "pointer";
           row.innerHTML = `
