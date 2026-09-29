@@ -1217,9 +1217,17 @@
     function cleanPlayerName(name) {
       if (!name) return "";
       return name
+        // Strip both uppercase and lowercase superscript tags
         .replace(/ᴳᴿᴹᴹ/gi, "")
+        .replace(/ᵍʳᵐᵐ/gi, "")
+        // Strip bracketed variants like [GRMM] or [grmm]
         .replace(/\[\s*grmm\s*\]/gi, "")
+        // Strip standalone tag words
         .replace(/\bgrmm\b/gi, "")
+        // Strip Norse/elder runic symbols (ᛟ)
+        .replace(/[\u16A0-\u16FF]/g, "")
+        // Normalize unusual unicode spaces into standard single space
+        .replace(/[\u00A0\u1680\u180E\u2000-\u200B\u202F\u205F\u3000\uFEFF]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
     }
