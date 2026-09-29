@@ -1275,10 +1275,10 @@
         for (let i = 5; i < lines.length; i++) {
           if (!lines[i]) continue;
           const row = parseCSVLine(lines[i]);
-          if (row.length <= 40) continue; // 9 for Column J, 40 for Column AO
+          if (row.length <= 9) continue; // 9 for Column J, 40 for Column AO
 
-          const rawName = row[33] || ""; // 2 for Column C, 33 for Column AH
-          const rawScore = row[40] || ""; // 9 for Column J, 40 for Column AO
+          const rawName = row[2] || ""; // 2 for Column C, 33 for Column AH
+          const rawScore = row[9] || ""; // 9 for Column J, 40 for Column AO
 
           const cleanedName = cleanPlayerName(rawName);
 
