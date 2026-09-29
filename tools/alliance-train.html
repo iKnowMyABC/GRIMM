@@ -1213,6 +1213,105 @@
     let isR45 = localStorage.getItem("grimm_r45_auth") === "true";
     let currentEditingPool = null;
 
+    // Helper: Strip tag from name (front, middle, or end)
+    function cleanPlayerName(name) {
+      if (!name) return "";
+      return name
+        .replace(/ᴳᴿᴹᴹ/gi, "")
+        .replace(/\[\s*grmm\s*\]/gi, "")
+        .replace(/\bgrmm\b/gi, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    // Helper: Parse CSV text respecting quoted fields
+    function parseCSVLine(text) {
+      const result = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c === '"') {
+          if (inQuotes && text[i + 1] === '"') {
+            cur += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (c === "," && !inQuotes) {
+          result.push(cur.trim());
+          cur = "";
+        } else {
+          cur += c;
+        }
+      }
+      result.push(cur.trim());
+      return result;
+    }
+
+    async function fetchTop15FromGoogleSheet() {
+      // Direct CSV export link for sheet gid=0 (Tracker)
+      const csvUrl = "https://docs.google.com/spreadsheets/d/1-ClSjz_eAU9WH-ll-h-kI8DQ7XBcLK9IU9bAujqUN2s/export?format=csv&gid=0";
+
+      try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) throw new Error("Network response not ok: " + response.status);
+        const text = await response.text();
+        const lines = text.split(/\r?\n/);
+
+        // Column C is Index 2 (A=0, B=1, C=2)
+        // Column J is Index 9 (A=0 ... J=9)
+        const candidates = [];
+
+        // Scan member rows (skipping header rows)
+        for (let i = 5; i < lines.length; i++) {
+          if (!lines[i]) continue;
+          const row = parseCSVLine(lines[i]);
+          if (row.length <= 9) continue;
+
+          const rawName = row[2] || "";
+          const rawScore = row[9] || "";
+
+          const cleanedName = cleanPlayerName(rawName);
+
+          // Exclude blank or non-player summary lines
+          if (
+            !cleanedName || 
+            cleanedName.length < 2 || 
+            cleanedName.toLowerCase().includes("calibration") ||
+            cleanedName.toLowerCase().includes("total")
+          ) {
+            continue;
+          }
+
+          // Strip any trailing '*' and parse numeric score
+          const numericScore = parseFloat(rawScore.replace("*", "").replace(/,/g, "")) || 0;
+
+          if (numericScore > 0) {
+            candidates.push({
+              name: cleanedName,
+              score: numericScore,
+              hasStar: rawScore.includes("*")
+            });
+          }
+        }
+
+        // Sort descending by highest score
+        candidates.sort((a, b) => b.score - a.score);
+
+        // Pick top 15
+        const top15 = candidates.slice(0, 15).map(c => c.name);
+
+        if (top15.length >= 5) {
+          console.log("Successfully imported Top 15 VS candidates from Google Sheet:", top15);
+          return top15;
+        }
+      } catch (err) {
+        console.warn("Google Sheet fetch failed or mid-week empty; falling back to homepage list:", err);
+      }
+      return null;
+    }
+    
     async function syncRosterFromHomepage() {
       try {
         const response = await fetch("../index.html");
@@ -1255,7 +1354,11 @@
         ALLIANCE_ROSTER = [R5_LEADER, ...R4_ROSTER, ...memberNames];
 
         poolsData.r4 = [...R4_ROSTER];
-        poolsData.vs = ALLIANCE_ROSTER.slice(1, 16);
+
+        // --- NEW: FETCH TOP 15 VS FROM GOOGLE SHEET (COLUMNS C & J) ---
+        const sheetVS = await fetchTop15FromGoogleSheet();
+        poolsData.vs = (sheetVS && sheetVS.length > 0) ? sheetVS : ALLIANCE_ROSTER.slice(1, 16);
+
         poolsData.ds = ALLIANCE_ROSTER.slice(5, 25);
         poolsData.donors = ALLIANCE_ROSTER.slice(1, 11);
 
