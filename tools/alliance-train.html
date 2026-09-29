@@ -1288,10 +1288,14 @@
           const numericScore = parseFloat(rawScore.replace("*", "").replace(/,/g, "")) || 0;
 
           if (numericScore > 0) {
+            const matchedRosterName = ALLIANCE_ROSTER.find(
+              member => member.toLowerCase().trim() === cleanedName.toLowerCase().trim()
+            );
+
+            // Use the website's exact casing if matched, otherwise keep cleanedName
             candidates.push({
-              name: cleanedName,
-              score: numericScore,
-              hasStar: rawScore.includes("*")
+              name: matchedRosterName || cleanedName,
+              score: numericScore
             });
           }
         }
@@ -1331,7 +1335,7 @@
           "Johnno",
           "NurmiTj",
           "ABC",
-          "Ovsi",
+          "05",
           "York",
           "Jedi"
         ];
