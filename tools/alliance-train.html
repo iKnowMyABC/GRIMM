@@ -1211,6 +1211,12 @@
       return result;
     }
 
+    const KNOWN_ALIASES = {
+      "switchoo": "switch",
+      "switcheroo": "switch"
+      "brother": "brothergrimm"
+    };
+
     async function fetchTop15FromGoogleSheet() {
       // Direct CSV export link for sheet gid=0 (Tracker)
       const csvUrl = "https://docs.google.com/spreadsheets/d/1-ClSjz_eAU9WH-ll-h-kI8DQ7XBcLK9IU9bAujqUN2s/export?format=csv&gid=0";
@@ -1250,9 +1256,12 @@
           const numericScore = parseFloat(rawScore.replace("*", "").replace(/,/g, "")) || 0;
 
           if (numericScore > 0) {
-            // Reconcile with homepage roster using case-insensitive match
+            // Check alias first (e.g. switchoo -> switch), otherwise fallback to cleanedName
+            const key = cleanPlayerName(cleanedName).toLowerCase().trim();
+            const lookupName = (KNOWN_ALIASES[key] || key).toLowerCase().trim();
+
             const matchedRosterName = ALLIANCE_ROSTER.find(
-              member => cleanPlayerName(member).toLowerCase() === cleanPlayerName(cleanedName).toLowerCase()
+              member => cleanPlayerName(member).toLowerCase().trim() === lookupName
             );
 
             // Use the website's exact casing if matched, otherwise keep cleanedName
@@ -1319,9 +1328,11 @@
 
           // Qualified if valid in either team
           if (validTeamA || validTeamB) {
-            // Reconcile with ALLIANCE_ROSTER using case-insensitive check
+            // Check if there is an alias (e.g., switchoo -> switch), otherwise use cleanedName
+            const lookupName = (KNOWN_ALIASES[cleanedName.toLowerCase().trim()] || cleanedName).toLowerCase().trim();
+
             const matchedRosterName = ALLIANCE_ROSTER.find(
-              member => cleanPlayerName(member).toLowerCase() === cleanPlayerName(cleanedName).toLowerCase()
+              member => cleanPlayerName(member).toLowerCase().trim() === lookupName
             );
 
             const finalName = matchedRosterName || cleanedName;
