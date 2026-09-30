@@ -1300,14 +1300,14 @@
         const qualifiedPlayers = [];
 
         // Safety boundary: Needs to reach at least Column AB/BF
-        const REQUIRED_BOUNDARY = 57; // 27 for Column AB, 57 for Column BF
+        const REQUIRED_BOUNDARY = 27; // 27 for Column AB, 57 for Column BF
 
         for (let i = 5; i < lines.length; i++) {
           if (!lines[i]) continue;
           const row = parseCSVLine(lines[i]);
           if (row.length <= REQUIRED_BOUNDARY) continue;
 
-          const rawName = row[33] || ""; // 2 for Column C, 33 for Column AH
+          const rawName = row[2] || ""; // 2 for Column C, 33 for Column AH
           const cleanedName = cleanPlayerName(rawName);
 
           if (!cleanedName || cleanedName.toLowerCase().includes("calibration") || cleanedName.toLowerCase().includes("total")) {
@@ -1315,16 +1315,20 @@
           }
 
           // Team A: Column Y (status) & Column Z (no-show check)
-          const teamA_Status = (row[54] || "").trim().toUpperCase(); // 24 for Column Y, 54 for Column BC
-          const teamA_Value  = (row[55] || "").trim().toUpperCase(); // 24 for Column Y, 55 for Column BD
+          const teamA_Status = (row[24] || "").trim().toUpperCase(); // 24 for Column Y, 54 for Column BC
+          const teamA_Value  = (row[25] || "").trim().toUpperCase(); // 25 for Column Z, 55 for Column BD
 
           // Team B: Column AA (status) & Column AB (no-show check)
-          const teamB_Status = (row[56] || "").trim().toUpperCase(); // 26 for Column AA, 56 for Column BE
-          const teamB_Value  = (row[57] || "").trim().toUpperCase(); // 27 for Column AB, 57 for Column BF
+          const teamB_Status = (row[26] || "").trim().toUpperCase(); // 26 for Column AA, 56 for Column BE
+          const teamB_Value  = (row[27] || "").trim().toUpperCase(); // 27 for Column AB, 57 for Column BF
 
-          // Rule: Must be 'R' or 'S', and next column MUST NOT be 'X'
-          const validTeamA = (teamA_Status === "R" || teamA_Status === "S") && (teamA_Value !== "X");
-          const validTeamB = (teamB_Status === "R" || teamB_Status === "S") && (teamB_Value !== "X");
+          // Excluded if marked as 'X' or if it includes 'NOTIFIED'
+          const isNoShowA = teamA_Value === "X" || teamA_Value.includes("NOTIFIED");
+          const isNoShowB = teamB_Value === "X" || teamB_Value.includes("NOTIFIED");
+
+          // Must be 'R' or 'S', and must not be marked as no-show/notified
+          const validTeamA = (teamA_Status === "R" || teamA_Status === "S") && !isNoShowA;
+          const validTeamB = (teamB_Status === "R" || teamB_Status === "S") && !isNoShowB;
 
           // Qualified if valid in either team
           if (validTeamA || validTeamB) {
