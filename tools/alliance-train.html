@@ -1252,7 +1252,7 @@
           if (numericScore > 0) {
             // Reconcile with homepage roster using case-insensitive match
             const matchedRosterName = ALLIANCE_ROSTER.find(
-              member => member.toLowerCase().trim() === cleanedName.toLowerCase().trim()
+              member => cleanPlayerName(member).toLowerCase() === cleanPlayerName(cleanedName).toLowerCase()
             );
 
             // Use the website's exact casing if matched, otherwise keep cleanedName
@@ -1321,7 +1321,7 @@
           if (validTeamA || validTeamB) {
             // Reconcile with ALLIANCE_ROSTER using case-insensitive check
             const matchedRosterName = ALLIANCE_ROSTER.find(
-              member => member.toLowerCase().trim() === cleanedName.toLowerCase().trim()
+              member => cleanPlayerName(member).toLowerCase() === cleanPlayerName(cleanedName).toLowerCase()
             );
 
             const finalName = matchedRosterName || cleanedName;
