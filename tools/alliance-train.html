@@ -1608,12 +1608,35 @@
       renderModalRoster(q);
     }
 
+    function getDefaultSlotLabel(slotId) {
+      if (slotId === "slot-wed-cond") return "--- Merited Member ---";
+      if (slotId === "slot-wed-vip") return "Driver's Choice";
+      if (slotId === "slot-fri-vip") return "Driver's Choice";
+      if (slotId === "slot-sun-vip" && activeWeekType === "ODD") return "Driver's Choice";
+      return "--- STANDBY ---";
+    }
+
     function renderModalRoster(query) {
       const container = document.getElementById("modal-roster-list");
       container.innerHTML = "";
+
+      if (activeSingleSlotTarget) {
+        const defaultText = getDefaultSlotLabel(activeSingleSlotTarget);
+        const resetRow = document.createElement("div");
+        resetRow.className = "roster-pick-row";
+        resetRow.style.cssText = "cursor: pointer; background: rgba(209, 138, 69, 0.12); border: 1px dashed rgba(209, 138, 69, 0.5); margin-bottom: 8px;";
+        resetRow.innerHTML = `<span style="font-weight: 600; color: var(--vip-gold-light, #ffd4a8); font-size: 13px; font-style: italic;">↺ Reset to Default (${defaultText})</span>`;
+        resetRow.addEventListener("click", () => {
+          const targetEl = document.getElementById(activeSingleSlotTarget);
+          if (targetEl) targetEl.innerText = defaultText;
+          closePoolModal();
+        });
+        container.appendChild(resetRow);
+      }
+
       const matches = ALLIANCE_ROSTER.filter(n => n.toLowerCase().includes(query));
 
-      if (matches.length === 0) {
+      if (matches.length === 0 && !activeSingleSlotTarget) {
         container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--steel-dim); padding: 18px; font-size: 11px;">No matching members found</div>`;
         return;
       }
@@ -1649,7 +1672,7 @@
         container.appendChild(row);
       });
     }
-
+    
     function openSingleSlotPicker(targetElementId, title) {
       if (!isR45) return;
       activeSingleSlotTarget = targetElementId;
@@ -1750,6 +1773,14 @@
         sunVipVal = "Driver's Choice";
       }
 
+      // Auto-reset manual slots on every new draft generation
+      document.getElementById("slot-wed-cond").innerText = "--- Merited Member ---";
+      document.getElementById("slot-wed-vip").innerText = "Driver's Choice";
+      document.getElementById("slot-fri-vip").innerText = "Driver's Choice";
+      if (activeWeekType === "ODD") {
+        document.getElementById("slot-sun-vip").innerText = "Driver's Choice";
+      }
+
       document.getElementById("slot-mon-cond").innerText = monCond;
       document.getElementById("slot-mon-vip").innerText = monVip;
       document.getElementById("slot-tue-cond").innerText = tueCond;
@@ -1762,7 +1793,7 @@
       document.getElementById("slot-sun-cond").innerText = sunCondVal;
 
       const slotSun = document.getElementById("slot-sun-vip");
-      if (slotSun) slotSun.innerText = sunVipVal;
+      if (slotSun && activeWeekType === "EVEN") slotSun.innerText = sunVipVal;
 
       stagedDraft = {
         weekType: activeWeekType,
