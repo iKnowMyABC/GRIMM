@@ -1010,7 +1010,7 @@
           <tr>
             <td class="day-cell">Wednesday</td>
             <td>
-              <div class="slot-display conductor-slot clickable-slot" id="slot-wed-cond">--- Merited Member ---</div>
+              <div class="slot-display conductor-slot clickable-slot" id="slot-wed-cond">Merited Member</div>
               <span class="criteria-sub">Chosen for <strong>Special Merits</strong> (DE help, battle participation; decided by R4)</span>
             </td>
             <td>
@@ -1466,7 +1466,7 @@
       document.getElementById("slot-tue-cond").innerText = item.tuesday.cond || "---";
       document.getElementById("slot-tue-vip").innerText = item.tuesday.vip || "---";
 
-      document.getElementById("slot-wed-cond").innerText = (item.wednesday && item.wednesday.cond) ? item.wednesday.cond : "--- Merited Member ---";
+      document.getElementById("slot-wed-cond").innerText = (item.wednesday && item.wednesday.cond) ? item.wednesday.cond : "Merited Member";
       document.getElementById("slot-wed-vip").innerText = (item.wednesday && item.wednesday.vip) ? item.wednesday.vip : "Driver's Choice";
 
       document.getElementById("slot-thu-cond").innerText = item.thursday.cond || "---";
@@ -1609,7 +1609,7 @@
     }
 
     function getDefaultSlotLabel(slotId) {
-      if (slotId === "slot-wed-cond") return "--- Merited Member ---";
+      if (slotId === "slot-wed-cond") return "Merited Member";
       if (slotId === "slot-wed-vip") return "Driver's Choice";
       if (slotId === "slot-fri-vip") return "Driver's Choice";
       if (slotId === "slot-sun-vip" && activeWeekType === "ODD") return "Driver's Choice";
@@ -1774,7 +1774,7 @@
       }
 
       // Auto-reset manual slots on every new draft generation
-      document.getElementById("slot-wed-cond").innerText = "--- Merited Member ---";
+      document.getElementById("slot-wed-cond").innerText = "Merited Member";
       document.getElementById("slot-wed-vip").innerText = "Driver's Choice";
       document.getElementById("slot-fri-vip").innerText = "Driver's Choice";
       if (activeWeekType === "ODD") {
